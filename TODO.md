@@ -8,13 +8,16 @@ list examples that are fully working.
 Chosen for fidelity: small, deterministic, and importing only modules TurboPython
 supports well today.
 
-- [ ] `mandelbrot` — 39 lines, `time`. ASCII fractal, pure arithmetic.
-- [ ] `collatz` — 100 lines, `time`. Integer work; candidate for `Int64` vs `int`.
-- [ ] `sieve` — 120 lines, `math`, `time`. Shed Skin's own headline benchmark.
-- [ ] `voronoi` — 57 lines, `math`, `random`, `time`. Validates that `random` really
+- [x] `mandelbrot` — 39 lines, `time`. ASCII fractal, pure arithmetic.
+- [x] `voronoi` — 57 lines, `math`, `random`, `time`. Validates that `random` really
       is byte-identical to CPython on the same seed.
-- [ ] `dijkstra2` — 110 lines, `heapq` (~92%). Exercises a supported stdlib module
-      beyond the builtins.
+- [x] `adatron` — 178 lines, `math`, `time`. Numeric SVM; public domain.
+- [x] `oliva2` — 147 lines, `random`, `time`. Reaction-diffusion sea-shell
+      patterns; writes a PGM image.
+- [ ] `dijkstra2` — blocked, see below. Preserved on `wip/dijkstra2`.
+- [ ] `rubik2` — blocked, see below. Preserved on `wip/rubik2`.
+- [x] `ant` — 147 lines, `random`, `time`. Ant Colony Optimization for TSP.
+- [ ] `sieve` — see note below.
 
 ## Later
 
@@ -33,14 +36,26 @@ supports well today.
 
 ## Blocked on compiler gaps
 
-These need TurboPython work before a faithful port is possible. Each should be
-filed against tpy-lang rather than worked around here.
+These need TurboPython work before a port is possible at all. Gaps that only change
+*how* a program is written -- an idiom that has a TurboPython equivalent -- are no
+longer blockers; see the fidelity policy in CLAUDE.md. Each of these should be filed
+against tpy-lang.
 
 - `life`, `sokoban`, `mastermind2` — need `collections.defaultdict` (Missing;
   needs macros).
 - `sudoku5`, `life` — need `itertools` beyond the current ~35% (`chain`, `product`,
   `groupby`).
 - `rsync` — needs `hashlib` beyond SHA-256 (currently ~20%).
+- `othello`, `othello2` — need `sys.stdin` and `input()` for their interactive
+  and UGI modes. Unreachable branches still have to typecheck.
+- `collatz` — builds its lookup tables with self-assigning comprehensions
+  (`lookup_c = [c + (i%2) for (i, c) in zip(lookup_multistep, lookup_c)]`). That form
+  emits invalid C++ (`&*` applied to a value-typed slot), so it cannot be ported
+  without restructuring. Int64 annotations were otherwise sufficient.
+- `sieve` — uses extended slice assignment (`sieve[bottom::si] = ...`) and mutates
+  the list it is iterating; also assigns `n` inside a loop then reuses it as a
+  function-level loop variable.
+- `minpng` — needs `struct.pack`; only `unpack`/`calcsize` are implemented.
 - `brainfuck` — does `from sys import stdin` and `stdin.read(1)`; `sys.stdin` is
   Missing ("needs read-side protocol"). Was in the first batch until the roadmap was
   checked properly.

@@ -22,7 +22,7 @@ Ports are taken from upstream revision
 
 ```bash
 cd <example-name>
-tpy <example-name>.py
+tpy -O <example-name>.py
 ```
 
 The entry point is always `<example-name>.py`. Examples needing extra setup say so
@@ -32,7 +32,14 @@ for requirements and build flags.
 ## Examples
 
 Examples are added in small batches, and appear here only once they fully work.
-None are listed yet — the first batch is in progress.
+
+| example | description | lines |
+| ------- | ----------- | ----- |
+| [adatron](adatron/) | Adatron SVM with a polynomial kernel | 204 |
+| [ant](ant/) | Ant Colony Optimization for the Travelling Salesman Problem | 175 |
+| [mandelbrot](mandelbrot/) | The Mandelbrot set rendered as ASCII art | 43 |
+| [oliva2](oliva2/) | Sea-shell pigmentation patterns, written as a PGM image | 159 |
+| [voronoi](voronoi/) | A Voronoi diagram rendered as ASCII art | 59 |
 
 ---
 
@@ -58,10 +65,13 @@ it is, and each example's README records both its origin and what we changed.
 
 ## How these ports are made
 
-The goal is to stay **as close to the original as possible**. In practice that
-means adding type annotations, occasionally picking a fixed-width integer type, and
-little else. Where more than that was needed, the example's README says exactly
-what changed and why.
+The goal is to stay **close to the original where that doesn't hurt**. Usually it
+costs nothing: type annotations, occasionally a fixed-width integer type, and little
+else. Where TurboPython genuinely wants a different construction — shared ownership
+through `Rc`, an explicit loop in place of a builtin that isn't available yet — the
+example uses the TurboPython version and its README explains what changed and why.
+Showing how a program is written in TurboPython is more useful than proving nothing
+changed.
 
 Specifically, each example's README documents:
 
@@ -71,9 +81,13 @@ Specifically, each example's README documents:
 - **TurboPython bugs worked around** — with a link to the upstream issue, if any.
   These are meant to be temporary; when the compiler is fixed, the workaround goes.
 
-Nondeterministic output, such as elapsed-time reports, is normalized away before
-comparing against CPython — never removed from the program.
+Every example's output is checked against CPython. Where the port is still ordinary
+Python plus annotations, it is run under both. Where it uses constructs CPython
+cannot execute, the **unmodified original** is run under CPython and compared
+against instead — so output parity holds either way, without contorting the port to
+keep it dual-target. Nondeterministic output, such as elapsed-time reports, is
+normalized away before comparing; it is never removed from the program.
 
-Ports that would require restructuring the original are deliberately not done, which
-usually means TurboPython is still missing a library or language feature. Those gaps
-get filed against the compiler instead, and the example waits for it to catch up.
+Some examples are still waiting on TurboPython features. Those gaps get filed
+against the compiler, and the example waits for it to catch up rather than being
+reshaped around the limitation.

@@ -13,10 +13,10 @@ exercise the compiler with synthetic tests.
   [Shed Skin](https://github.com/shedskin/shedskin) project, a Python-to-C++
   compiler with goals close to TurboPython's. Third-party code, mixed licenses.
 
-**The first batch is still being ported, so the gallery is empty today.** Examples
-are added in small batches, and one appears only once it fully works: it compiles,
-runs to completion, and matches CPython's output wherever CPython can run it.
-Examples still waiting on compiler work are listed in [TODO.md](TODO.md).
+The first batch is still being ported, so the gallery is small for now. Examples are
+added in small batches, and one appears only once it fully works: it compiles, runs
+to completion, and matches CPython's output wherever CPython can run it. Examples
+still waiting on compiler work are listed in [TODO.md](TODO.md).
 
 More categories will follow, including original TurboPython examples with no Shed
 Skin counterpart — starting with CPython extension modules written in TurboPython.
@@ -50,16 +50,19 @@ files it reads:
 ```bash
 git clone https://github.com/trozen/tpy-examples
 cd tpy-examples/shedskin/<example-name>
-tpy <example-name>.py
+tpy -O <example-name>.py
 ```
 
 `tpy` compiles the program to a native binary and runs it. The entry point is always
 `<example-name>.py`. Examples needing extra setup say so in their own README.
 
+Use `-O` to see what TurboPython actually does — it is roughly 3x faster than the
+default unoptimized build, which exists for quick edit-run cycles.
+
 Useful flags:
 
 ```bash
-tpy -O <example-name>.py          # optimized build
+tpy <example-name>.py             # unoptimized: builds faster, runs slower
 tpy --dump-code <example-name>.py # inspect the generated C++
 ```
 

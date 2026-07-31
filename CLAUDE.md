@@ -56,27 +56,42 @@ complete step 4, so the example cannot be published.
 1. Copy the original from `tmp/shedskin/examples/<name>/` into `shedskin/<name>/`,
    along with any data files it reads from `../testdata/`.
 2. Fix the data-file paths to be local — each example is self-contained.
-3. Add type annotations, and a fixed-width integer type where one is genuinely
-   needed, until it compiles: `tpy <name>.py`. Change nothing else. If it will not
-   compile without restructuring the program, stop and defer the example — see
-   **Fidelity gates what gets ported** below.
-4. Verify it matches CPython — the two must produce the same output, modulo
-   normalized nondeterminism (elapsed-time reports etc.):
+3. Get it compiling with `tpy <name>.py` — the unoptimized build is quicker to
+   iterate on. See **Fidelity where it doesn't hurt** below for how far to go.
+4. Verify the output against CPython. Whichever route applies, the two outputs must
+   match line for line: only elapsed-time figures may differ, everything else must
+   be byte-identical.
+
+   **Preferred — run the port itself under CPython.** Works when the port stays
+   ordinary Python plus annotations:
 
    ```bash
-   tpy <name>.py
-   PYTHONPATH=<tpy-lang-checkout>/lib/cpy python3 <name>.py
+   tpy -O <name>.py
+   PYTHONPATH=tmp/tpy-lang/lib/cpy python3 <name>.py
    ```
 
    The `PYTHONPATH` is required: a ported example imports `tpy` types, and the
    CPython compatibility stubs in `lib/cpy` are **not** shipped in the `tpy-lang`
-   wheel — they only exist in a source checkout (`tmp/tpy-lang/lib/cpy` here, also
-   wrapped by that checkout's `run_cpython.sh`). Compare the two outputs line by
-   line: only elapsed-time figures may differ, everything else must be byte-identical.
+   wheel — they exist only in a source checkout (also wrapped by that checkout's
+   `run_cpython.sh`).
 
-   Examples that bind native libraries directly cannot run under CPython at all.
-   For those, read the ported source against the original line by line instead, and
-   record in the example's README that CPython verification was not possible.
+   **Otherwise — run the unmodified original under CPython** and compare against
+   it. Use this when the port uses constructs CPython cannot execute (`Rc`/`Ptr`
+   auto-deref, native bindings) or when keeping it CPython-runnable would mean
+   contorting the code:
+
+   ```bash
+   tpy -O <name>.py
+   python3 tmp/shedskin/examples/<name>/<name>.py
+   ```
+
+   The Shed Skin originals are plain Python, so this keeps full output parity
+   without forcing the port to be dual-target. Record in the example's README which
+   route was used.
+
+   Only when neither is possible — a GUI or native-binding example with no
+   comparable output — read the ported source against the original line by line
+   instead, and say so in the README.
 5. Write `shedskin/<name>/README.md` from the template below.
 6. List it in `shedskin/README.md` as `| <name> | <one-line description> | <N> |`
    (name, description, line count). If it is the first, create the table there and
@@ -84,18 +99,33 @@ complete step 4, so the example cannot be published.
 
 ## Hard rules
 
-**Fidelity gates what gets ported.** Stay as close to the original as possible —
-type annotations, an occasional fixed-width integer type, and little else. If a
-missing TurboPython library or language feature would force you to restructure the
-program, **stop and defer the example**. Do not rewrite it to fit. Record the gap in
-`TODO.md` under "Blocked on compiler gaps" so it can be filed against tpy-lang; a
-blocked example is useful pressure on the compiler roadmap, and a contorted example
-published on the project's own website is an argument against TurboPython.
+**Fidelity where it doesn't hurt.** Prefer the original wording when the cost is an
+annotation or a small equivalent substitution — that is the common case, and it is
+the strongest thing the gallery can show. But fidelity is a preference, not a
+constraint. Where TurboPython genuinely wants a different construction — shared
+ownership through `Rc`/`Ptr`, an explicit loop where a missing builtin would
+otherwise force a contortion — write the TurboPython version and **explain it in the
+README**. Showing how a program is expressed in TurboPython is the point; proving
+nothing changed is not.
+
+What to avoid is the third path: a hybrid that is neither the original nor idiomatic
+TurboPython, adopted only to dodge a compiler bug or to keep the file runnable under
+CPython. Prefer a clean TurboPython example over a hacky dual-target one. If the only
+way forward is contortion, defer the example instead and record the gap in `TODO.md`
+so it can be filed against tpy-lang.
 
 **Only fully working examples get published.** An example lands once it compiles,
-runs to completion, and matches CPython's output — or, where CPython cannot run it
-at all because of native bindings, once it has been verified by inspection per step
-4. No placeholders, no "coming soon" rows, no status columns full of failures.
+runs to completion, and its output matches CPython by one of the two routes in step
+4 — or, where neither is possible, once it has been verified by inspection. No
+placeholders, no "coming soon" rows, no status columns full of failures.
+
+**Forward-referencing annotations only matter for examples that run under CPython.**
+TurboPython resolves them regardless. But CPython evaluates class- and module-level
+annotations at runtime, so `neighs: list[Rc[Node]]` inside `class Node`, or a global
+annotated with a class declared further down, raises `NameError` there. If the
+example is verified by running the port itself under CPython (step 4, first route),
+quote the annotation or add `from __future__ import annotations`. If it is verified
+against the unmodified original instead, leave it alone — the import is noise.
 
 **Never strip original copyright or license notices.** These are third-party
 programs under their own terms, and many carry an author line and nothing more —
@@ -133,7 +163,9 @@ Attribution and license, verbatim from the source header:
 
 ## Changes from the original
 
-- <every deviation, including annotations added>
+- <every deviation, including annotations added. Where a TurboPython idiom
+  replaced a Python one, explain what it does and why — this section is the
+  example's teaching material, not an apology.>
 
 ## TurboPython bugs worked around
 
@@ -142,7 +174,7 @@ Attribution and license, verbatim from the source header:
 (Omit this section if there were none.)
 ```
 
-Add a **Run** section only if the example needs more than `tpy <name>.py` — extra
+Add a **Run** section only if the example needs more than `tpy -O <name>.py` — extra
 setup, downloaded assets, a system library. Otherwise the convention in
 `README.md` covers it.
 
