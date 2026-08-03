@@ -97,7 +97,27 @@ complete step 4, so the example cannot be published.
    (name, description, line count). If it is the first, create the table there and
    remove the "None are listed yet" sentence.
 
+## The `landing/` directory
+
+Everything above concerns `shedskin/`. `landing/` holds the short single-file
+programs shown in the code window on tpy-lang.org, and its rules are different:
+one file per language topic, opening with a one- or two-line comment saying what
+it shows, no data files, no arguments, run as `tpy <name>.py`.
+
+**Lines stay under 61 characters** — the width of the code window on the site.
+Aim for 57 when editing. The website repository's `verify_examples.py` fails on
+any line over 61, so the constraint is enforced there rather than here.
+
+`landing/` is consumed by the website, which means an edit here is not live until
+the website repository picks it up: it regenerates `docs/examples.js` with
+`build_examples.py` and bumps its submodule pointer at this repository. Which
+files appear, in what order, under what label is decided by `ORDER` in that
+repository's `build_examples.py` — adding a file here does not put it on the
+page. See `landing/README.md`.
+
 ## Hard rules
+
+The rules in this section govern `shedskin/`; `landing/` is covered above.
 
 **Fidelity where it doesn't hurt.** Prefer the original wording when the cost is an
 annotation or a small equivalent substitution — that is the common case, and it is

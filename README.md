@@ -3,15 +3,19 @@
 A gallery of example programs for [TurboPython](https://tpy-lang.org) (`tpy`) — a
 compiler that translates Python to C++.
 
-Each one is a real program someone wrote to get a job done, ported to build and run
-with `tpy`. The point is to show what TurboPython does with ordinary code, not to
-exercise the compiler with synthetic tests.
+Most are real programs someone wrote to get a job done, ported to build and run with
+`tpy`; a smaller set is written here to show one part of the language at a time. The
+point is to show what TurboPython does with ordinary code, not to exercise the
+compiler with synthetic tests.
 
 ## Examples
 
 - [`shedskin/`](shedskin/README.md) — programs ported from the
   [Shed Skin](https://github.com/shedskin/shedskin) project, a Python-to-C++
   compiler with goals close to TurboPython's. Third-party code, mixed licenses.
+- [`landing/`](landing/README.md) — the short single-file programs shown in the
+  code window on [tpy-lang.org](https://tpy-lang.org), each demonstrating one
+  part of the language. Written for this project, MIT.
 
 The first batch is still being ported, so the gallery is small for now. Examples are
 added in small batches, and one appears only once it fully works: it compiles, runs
@@ -44,8 +48,8 @@ language documentation.
 
 ## Running an example
 
-Every example lives in its own directory and is self-contained, including any data
-files it reads:
+Every ported example lives in its own directory and is self-contained, including any
+data files it reads:
 
 ```bash
 git clone https://github.com/trozen/tpy-examples
@@ -54,7 +58,9 @@ tpy -O <example-name>.py
 ```
 
 `tpy` compiles the program to a native binary and runs it. The entry point is always
-`<example-name>.py`. Examples needing extra setup say so in their own README.
+`<example-name>.py`. Examples needing extra setup say so in their own README. The
+programs in [`landing/`](landing/README.md) are single files rather than
+directories, run the same way from inside `landing/`.
 
 Use `-O` to see what TurboPython actually does — it is roughly 3x faster than the
 default unoptimized build, which exists for quick edit-run cycles.
