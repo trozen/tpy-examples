@@ -80,10 +80,16 @@ released package.
 
 ## Gallery
 
-[![DOOM's E1M1 rendered by the doom example](shedskin/doom/doom.png)](shedskin/doom/)
+[<img src="shedskin/doom/doom.png" alt="DOOM's E1M1 rendered by the doom example" height="300">](shedskin/doom/)
 
 E1M1, drawn by [`doom`](shedskin/doom/): a software BSP renderer in annotated
 Python, on SDL2 through TurboPython's native bindings.
+
+[<img src="shedskin/path_tracing/path_tracing.png" alt="A Cornell box rendered by the path_tracing example" height="300">](shedskin/path_tracing/)
+
+A Cornell box, drawn by [`path_tracing`](shedskin/path_tracing/): a Monte Carlo
+path tracer at ten thousand samples per pixel, with the material types
+dispatching through a `@dynamic` protocol.
 
 ## Licensing
 

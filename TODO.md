@@ -21,6 +21,9 @@ supports well today.
 
 ## Later
 
+- [x] `path_tracing` — 409 lines, `math`, `random`, `sys`, `time`. Cornell-box path
+      tracer; the first port to need runtime polymorphism (`@dynamic` protocol +
+      `Box[Material]`).
 - [x] `doom` — the GUI milestone. Needs an SDL2-backed `pygame` shim (kept local to
       the example at first) plus a separately downloaded `DOOM1.WAD`. A verbatim
       `doom.py` running on native SDL2 is the strongest showcase in the corpus.

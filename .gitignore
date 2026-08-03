@@ -9,3 +9,8 @@
 __tpyc__/
 __pycache__/
 *.so
+
+# Images and dumps the examples write when they run
+/shedskin/doom/frame.raw
+/shedskin/oliva2/oliva.pgm
+/shedskin/path_tracing/pt.ppm
