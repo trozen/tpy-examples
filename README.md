@@ -78,6 +78,13 @@ need compatibility stubs that currently ship only in a `tpy-lang` source checkou
 So the CPython comparison we run while porting cannot yet be reproduced from a
 released package.
 
+## Gallery
+
+[![DOOM's E1M1 rendered by the doom example](shedskin/doom/doom.png)](shedskin/doom/)
+
+E1M1, drawn by [`doom`](shedskin/doom/): a software BSP renderer in annotated
+Python, on SDL2 through TurboPython's native bindings.
+
 ## Licensing
 
 **The directory boundary is the license boundary.**

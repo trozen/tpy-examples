@@ -2,6 +2,8 @@
 
 The Mandelbrot set rendered as ASCII art. ~43 lines.
 
+![The Mandelbrot set as this example prints it](mandelbrot.png)
+
 ## Origin
 
 Ported from

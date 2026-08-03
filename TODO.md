@@ -21,7 +21,7 @@ supports well today.
 
 ## Later
 
-- [ ] `doom` — the GUI milestone. Needs an SDL2-backed `pygame` shim (kept local to
+- [x] `doom` — the GUI milestone. Needs an SDL2-backed `pygame` shim (kept local to
       the example at first) plus a separately downloaded `DOOM1.WAD`. A verbatim
       `doom.py` running on native SDL2 is the strongest showcase in the corpus.
 - [ ] Check harness: run each example under CPython and `tpy`, normalize timing
