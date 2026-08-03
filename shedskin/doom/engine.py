@@ -2,17 +2,19 @@ import math
 from struct import unpack_from
 import random
 
+from typing import Final
+
 from tpy import Int32, Own, Ptr, UInt8, readonly
 from tplib import Box
 
 # Annotated so they can be imported: an unannotated module-level variable is
 # not exported in TurboPython 0.5.1.
-WIDTH: Int32 = 800
-HEIGHT: Int32 = 600
+WIDTH: Final[Int32] = 800
+HEIGHT: Final[Int32] = 600
 
 WIDTH_2 = WIDTH//2
 HEIGHT_2 = HEIGHT//2
-HEIGHT_INV = 1.0 / WIDTH
+HEIGHT_INV: Final[float] = 1.0 / WIDTH
 
 TAN_45_DEG = math.tan(math.radians(45))
 
@@ -301,6 +303,24 @@ class Map:
     player: Player
 
     def __init__(self, filepath: str, map_: str) -> None:
+        # Each extract_ method below fills its own field, but a field first
+        # assigned in a callee is default-constructed rather than initialized,
+        # which is a divergence from CPython (where the attribute would simply
+        # not exist yet). Stating the empty value here makes that explicit.
+        self.entry_data = {}
+        self.palette = []
+        self.colormaps = []
+        self.patches = []
+        self.textures = {}
+        self.vertices = []
+        self.sectors = []
+        self.sidedefs = []
+        self.linedefs = []
+        self.segs = []
+        self.subsectors = []
+        self.bspnodes = []
+        self.things = []
+
         self.extract_entries(filepath, map_)
 
         self.extract_palette()
@@ -474,6 +494,9 @@ class Map:
                 offset_y = Int32(oy_u)
                 patch_index = Int32(pi_u)
                 pic = self.patches[patch_index]
+                # A PNAMES entry with no matching lump stays None; a texture
+                # referencing one would be a malformed WAD.
+                assert pic is not None
                 for m in range(pic.width):
                     for n in range(pic.height):
                         x = m+offset_x
@@ -642,6 +665,12 @@ class ClipBufferNode:
                 result.append(end)
                 return
 
+        # Every path reaching here has partitioned the node, so both children
+        # exist -- the asserts state that for the compiler, which would
+        # otherwise emit a null check per access.
+        assert self.left is not None
+        assert self.right is not None
+
         # recurse into left and right
         if start <= self.partitionPoint and end <= self.partitionPoint:
             self.left.checkSpan(start, end, result, add)
@@ -780,6 +809,8 @@ def draw_flat_col(drawsurf: bytearray, x: Int32, ceilMin: Int32, ceilMax: Int32,
 def draw_sky_col(drawsurf: bytearray, x: Int32, upperMinY: Int32,
                  upperMaxY: Int32, seg: Seg, player: Player) -> None:
     ceil_pic = seg.sector_front.ceil_pic
+    # Only called for segs whose ceiling is the sky texture, which resolved.
+    assert ceil_pic is not None
     ceilingTextureWidth = ceil_pic.width
     ceilingTextureHeight = ceil_pic.height
     ceilTextureData = ceil_pic.data

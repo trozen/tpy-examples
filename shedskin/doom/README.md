@@ -1,7 +1,7 @@
 # doom
 
 A DOOM WAD renderer: reads the original game's map data and draws it with a
-software BSP renderer, in a window via SDL2. ~1200 lines across three files.
+software BSP renderer, in a window via SDL2. ~1496 lines across three files.
 
 ![E1M1 rendered by this example](doom.png)
 
@@ -91,7 +91,22 @@ which is the large majority of a frame:
 **Structure.** `doom_main.py` became `doom.py` (the entry point must match the
 directory) and the engine became `engine.py`. The nested `move_player` closure
 became a plain function taking and returning the velocities. `WIDTH`/`HEIGHT`
-carry annotations because an unannotated module-level variable is not exported.
+carry annotations because an unannotated module-level variable is not exported,
+and `Final` where they are genuinely constant.
+
+**Stated invariants.** Three places dereference a value the compiler sees as
+nullable but that the WAD guarantees: a `PNAMES` patch referenced by a texture,
+the sky ceiling picture in `draw_sky_col`, and `ClipBufferNode`'s children on
+the paths that have just partitioned the node. Each carries an
+`assert x is not None`, which removes the runtime null check the compiler would
+otherwise emit and, more usefully, writes the invariant down. It made no
+measurable difference to frame time — none of the three is in the innermost
+loop.
+
+**`Map.__init__` states its fields empty** before the `extract_` methods that
+fill them. A field first assigned in a callee is default-constructed rather
+than initialized, which diverges from CPython, where the attribute would not
+exist yet; the explicit empty values make the starting state visible.
 
 **The pygame layer is a replacement, not an emulation.** The renderer needs a
 window, a way to push an 8-bit paletted framebuffer to it, keyboard state and a

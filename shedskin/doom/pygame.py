@@ -14,6 +14,8 @@ SDL2's symbols are declared directly with @native. SDL.h is deliberately not
 included: only the functions below are used, so declaring them keeps the build
 free of any dependency on SDL's headers being installed.
 '''
+from typing import Final
+
 from tpy import Char, Int32, Own, UInt8, UInt32, Ptr, readonly
 from tpy.extern import native
 from tpy.unsafe import unsafe_ptr, unsafe_load
@@ -89,11 +91,11 @@ _QUIT: Int32 = 0x100
 _EVENT_SIZE: Int32 = 56  # sizeof(SDL_Event); only the leading Uint32 is read
 
 # Scancodes -- what SDL_GetKeyboardState is indexed by.
-K_UP: Int32 = 82
-K_DOWN: Int32 = 81
-K_LEFT: Int32 = 80
-K_RIGHT: Int32 = 79
-K_LCTRL: Int32 = 224
+K_UP: Final[Int32] = 82
+K_DOWN: Final[Int32] = 81
+K_LEFT: Final[Int32] = 80
+K_RIGHT: Final[Int32] = 79
+K_LCTRL: Final[Int32] = 224
 K_q: Int32 = 20
 
 
