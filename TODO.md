@@ -27,9 +27,11 @@ supports well today.
 - [x] `doom` — the GUI milestone. Needs an SDL2-backed `pygame` shim (kept local to
       the example at first) plus a separately downloaded `DOOM1.WAD`. A verbatim
       `doom.py` running on native SDL2 is the strongest showcase in the corpus.
-- [ ] Check harness: run each example under CPython and `tpy`, normalize timing
-      output, diff. Deferred until a few examples exist — it should be shaped by
-      real ports, not guessed at. Then wire it into CI.
+- [x] Check harness — `.verify/`: build every example against the pinned compiler,
+      run the runnable ones, compare with recorded outputs. CPython parity stays a
+      manual step at port time; automating it belongs in tpy-lang, not here.
+- [ ] Wire `make test` into CI once the `tpy-lang` repository is public — until
+      then Actions cannot fetch the `.verify/tpy` submodule.
 - [ ] Speedup numbers per example. Deferred until the harness can measure both runs
       systematically on one machine; ad-hoc laptop numbers age badly.
 - [ ] Decide whether the `pygame` shim becomes shared repo infrastructure, or moves

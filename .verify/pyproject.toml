@@ -1,0 +1,25 @@
+# The verification harness for the example gallery -- not a package. Everything
+# runs through `uv run` from this directory (or `make test` from the root),
+# which creates .venv from this file on first use.
+[project]
+name = "tpy-examples-verify"
+version = "0"
+requires-python = ">=3.12"
+dependencies = [
+    "pytest",
+    "tpy-lang",
+]
+
+[tool.uv]
+package = false
+
+# The compiler comes from the pinned submodule, not PyPI: the submodule commit
+# is the version the examples are verified against.
+[tool.uv.sources]
+tpy-lang = { path = "tpy", editable = true }
+
+[tool.pytest.ini_options]
+# Only the harness itself; the compiler submodule carries its own suite.
+testpaths = ["test_examples.py", "test_version.py"]
+norecursedirs = ["tpy", ".venv"]
+addopts = "-ra"

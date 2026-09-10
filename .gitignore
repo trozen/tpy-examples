@@ -14,3 +14,6 @@ __pycache__/
 /shedskin/doom/frame.raw
 /shedskin/oliva2/oliva.pgm
 /shedskin/path_tracing/pt.ppm
+
+# Verification harness venv
+/.verify/.venv

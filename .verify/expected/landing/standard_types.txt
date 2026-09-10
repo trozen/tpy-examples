@@ -1,0 +1,7 @@
+int32=42 big=1099511627776 ok=True
+float: 3.142857142857143
+str: turbopython bytes: 3 1
+tuple: (3, 4) ends: 5 9
+evens: [8] head: [5, 3, 8]
+squares: {8: 64} thirds: [0, 1, 2]
+none? True equals: None

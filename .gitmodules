@@ -1,0 +1,3 @@
+[submodule ".verify/tpy"]
+	path = .verify/tpy
+	url = git@github.com:trozen/tpy-lang.git

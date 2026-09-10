@@ -83,12 +83,18 @@ Specifically, each example's README documents:
 - **TurboPython bugs worked around** — with a link to the upstream issue, if any.
   These are meant to be temporary; when the compiler is fixed, the workaround goes.
 
-Every example's output is checked against CPython. Where the port is still ordinary
-Python plus annotations, it is run under both. Where it uses constructs CPython
-cannot execute, the **unmodified original** is run under CPython and compared
-against instead — so output parity holds either way, without contorting the port to
-keep it dual-target. Nondeterministic output, such as elapsed-time reports, is
-normalized away before comparing; it is never removed from the program.
+Every port is checked against its original. Usually the **unmodified original** is
+run under CPython, the port under TurboPython, and the two outputs must be
+identical; comparing against the original rather than running the port under
+CPython means there is never a reason to contort the port to keep it dual-target.
+Some earlier ports were instead run under CPython themselves, which works while a
+port is still ordinary Python plus annotations, and each README says which was
+done. Where neither is possible — a program drawing to a window — the port was
+read against the original line by line, and the README says that too.
+Nondeterministic output, such as elapsed-time reports, is normalized away before
+comparing; it is never removed from the program. The output verified this way is
+recorded, and re-checked against the pinned compiler by `make test` — see
+[`.verify/`](../.verify/README.md).
 
 Some examples are still waiting on TurboPython features. Those gaps get filed
 against the compiler, and the example waits for it to catch up rather than being

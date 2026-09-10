@@ -1,0 +1,1 @@
+Contact(id=1, name='Ada', address=Address(user='ada', host='acme.io'))

@@ -29,27 +29,30 @@ When writing or modifying `.py` files compiled by tpy:
 tpy --install-agent-docs docs/
 ```
 
-Examples target **tpy-lang 0.5.1**. When that changes, update it here and in
-`README.md` — the Requirements bullet and both `pip install` blocks.
+Examples target **tpy-lang 0.5.1**. That version is pinned as the `.verify/tpy`
+submodule. When it changes, move the submodule to the new tag and update the
+version here and in `README.md` — the Requirements bullet and both `pip install`
+blocks. `make test` fails while the three disagree.
 
 ## Local setup
 
-Porting needs two checkouts that are not part of this repository. They are local
-working copies, not dependencies of the published examples, so `tmp/` is gitignored
-and every path below is a convention rather than a guarantee:
+Porting needs two checkouts. The first is the Shed Skin repository, a local working
+copy rather than a dependency of the published examples, so `tmp/` is gitignored
+and the path is a convention rather than a guarantee:
 
 ```bash
 mkdir -p tmp
 git clone https://github.com/shedskin/shedskin tmp/shedskin
 ```
 
-The second is a `tpy-lang` source checkout, needed only for the CPython
-compatibility stubs in `lib/cpy` (they are not in the released wheel). Clone it to
-`tmp/tpy-lang`, which is what the commands below assume.
+The second is the `tpy-lang` source checkout pinned as the `.verify/tpy` submodule
+(`git submodule update --init .verify/tpy`). The verification harness needs it as
+the compiler to test against, and the fallback route in step 4 needs its CPython
+compatibility stubs in `lib/cpy`, which are not in the released wheel.
 
 If the Shed Skin checkout is missing, stop and ask — do not port from memory or from
-a web copy. If the `tpy-lang` checkout is missing you can still port, but you cannot
-complete step 4, so the example cannot be published.
+a web copy. If the submodule is not checked out you can still port, but you cannot
+complete step 7, so the example cannot be published.
 
 ## Porting an example
 
@@ -58,44 +61,58 @@ complete step 4, so the example cannot be published.
 2. Fix the data-file paths to be local — each example is self-contained.
 3. Get it compiling with `tpy <name>.py` — the unoptimized build is quicker to
    iterate on. See **Fidelity where it doesn't hurt** below for how far to go.
-4. Verify the output against CPython. Whichever route applies, the two outputs must
-   match line for line: only elapsed-time figures may differ, everything else must
-   be byte-identical.
+4. Verify the port against the original. This is done once, here, and it is what
+   makes the output recorded in step 7 worth anything: the harness can only
+   replay what tpy did, it cannot tell a faithful port from a plausible-looking
+   wrong one. The two outputs must match line for line: only elapsed-time figures
+   may differ, everything else must be byte-identical. Proving that the compiler
+   agrees with CPython is not the goal — that is tpy-lang's own test suite's job.
 
-   **Preferred — run the port itself under CPython.** Works when the port stays
-   ordinary Python plus annotations:
-
-   ```bash
-   tpy -O <name>.py
-   PYTHONPATH=tmp/tpy-lang/lib/cpy python3 <name>.py
-   ```
-
-   The `PYTHONPATH` is required: a ported example imports `tpy` types, and the
-   CPython compatibility stubs in `lib/cpy` are **not** shipped in the `tpy-lang`
-   wheel — they exist only in a source checkout (also wrapped by that checkout's
-   `run_cpython.sh`).
-
-   **Otherwise — run the unmodified original under CPython** and compare against
-   it. Use this when the port uses constructs CPython cannot execute (`Rc`/`Ptr`
-   auto-deref, native bindings) or when keeping it CPython-runnable would mean
-   contorting the code:
+   **Preferred — run the unmodified original under CPython** and compare its
+   output with the port's:
 
    ```bash
    tpy -O <name>.py
    python3 tmp/shedskin/examples/<name>/<name>.py
    ```
 
-   The Shed Skin originals are plain Python, so this keeps full output parity
-   without forcing the port to be dual-target. Record in the example's README which
-   route was used.
+   The Shed Skin originals are plain Python, so this needs nothing beyond the
+   Shed Skin checkout, and it tests exactly the claim the gallery makes — that the
+   port does what the original does — without any pressure to keep the port
+   CPython-runnable.
 
-   Only when neither is possible — a GUI or native-binding example with no
-   comparable output — read the ported source against the original line by line
-   instead, and say so in the README.
+   **Fallback — run the port itself under CPython.** For programs with no runnable
+   original to compare against (the `landing/` files, original examples added
+   later). Works only while the port stays ordinary Python plus annotations:
+
+   ```bash
+   tpy -O <name>.py
+   PYTHONPATH=$(git rev-parse --show-toplevel)/.verify/tpy/lib/cpy python3 <name>.py
+   ```
+
+   The `PYTHONPATH` is required: the program imports `tpy` types, and the CPython
+   compatibility stubs in `lib/cpy` are **not** shipped in the `tpy-lang` wheel —
+   they exist only in the source checkout (also wrapped by that checkout's
+   `run_cpython.sh`). The path is given from the repository root because the
+   command runs from inside `landing/` or `shedskin/<name>/`.
+
+   Record in the example's README which route was used. Only when neither is
+   possible — a GUI or native-binding example with no comparable output — read the
+   ported source against the original line by line instead, and say so in the
+   README.
 5. Write `shedskin/<name>/README.md` from the template below.
 6. List it in `shedskin/README.md` as `| <name> | <one-line description> | <N> |`
    (name, description, line count). If it is the first, create the table there and
    remove the "None are listed yet" sentence.
+7. Record its output for the verification harness: `make test` picks the example
+   up automatically and fails for want of a recorded output, then `make bless`
+   records it. `make bless` touches only examples with no recording, so it cannot
+   overwrite another example's output by accident; `make bless-all` re-records
+   everything and is for compiler bumps. Bless only after step 4 has passed — the
+   recorded output is the verified output. If the example cannot run unattended,
+   or writes a file worth checking, say so in `.verify/expected/<category>/<name>.json`
+   first (`build_only` with a reason, or `output_files`; see `.verify/conftest.py`).
+   See **Verification** below.
 
 ## The `landing/` directory
 
@@ -135,7 +152,7 @@ way forward is contortion, defer the example instead and record the gap in `TODO
 so it can be filed against tpy-lang.
 
 **Only fully working examples get published.** An example lands once it compiles,
-runs to completion, and its output matches CPython by one of the two routes in step
+runs to completion, and its output matches the original by one of the two routes in step
 4 — or, where neither is possible, once it has been verified by inspection. No
 placeholders, no "coming soon" rows, no status columns full of failures.
 
@@ -143,9 +160,10 @@ placeholders, no "coming soon" rows, no status columns full of failures.
 TurboPython resolves them regardless. But CPython evaluates class- and module-level
 annotations at runtime, so `neighs: list[Rc[Node]]` inside `class Node`, or a global
 annotated with a class declared further down, raises `NameError` there. If the
-example is verified by running the port itself under CPython (step 4, first route),
-quote the annotation or add `from __future__ import annotations`. If it is verified
-against the unmodified original instead, leave it alone — the import is noise.
+example is verified by running the port itself under CPython (step 4, fallback
+route), quote the annotation or add `from __future__ import annotations`. If it is
+verified against the unmodified original instead, leave it alone — the import is
+noise.
 
 **Never strip original copyright or license notices.** These are third-party
 programs under their own terms, and many carry an author line and nothing more —
@@ -200,6 +218,15 @@ setup, downloaded assets, a system library. Otherwise the convention in
 
 The public statement of these rules is the "How these ports are made" section of
 `shedskin/README.md`. Keep the two in sync.
+
+## Verification
+
+`.verify/` is the test harness, not an example directory: it builds every example
+against the pinned compiler, runs the ones that can run unattended, and compares
+their output with what was recorded when the port was verified. `make test` runs
+it; `make bless` records outputs. `.verify/README.md` has the details. CPython
+parity itself is not automated here — that is tpy-lang's job — which is why
+blessing must follow the manual check in step 4.
 
 ## Backlog
 

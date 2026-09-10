@@ -84,6 +84,13 @@ need compatibility stubs that currently ship only in a `tpy-lang` source checkou
 So the CPython comparison we run while porting cannot yet be reproduced from a
 released package.
 
+### Verifying the examples
+
+`.verify/` is not an example directory. It holds the checks that keep the gallery
+honest: every example is built against the pinned compiler, the ones that can run
+unattended are run, and their output is compared with what was recorded when the
+port was verified. `make test` runs it; see [.verify/README.md](.verify/README.md).
+
 ## Gallery
 
 [<img src="shedskin/doom/doom.png" alt="DOOM's E1M1 rendered by the doom example" height="300">](shedskin/doom/)
