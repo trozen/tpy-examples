@@ -32,13 +32,13 @@ it is id Software's data, not ours. Download `DOOM1.WAD` (see
 (`libsdl2-dev` on Debian/Ubuntu).
 
 ```bash
-tpy -O doom.py path/to/DOOM1.WAD
+tpy doom.py path/to/DOOM1.WAD
 ```
 
 Arrow keys move, ctrl+left/right strafe, `q` quits.
 
 The WAD path is optional and defaults to `doom1.wad` in the current directory,
-so dropping the file here lets you just run `tpy -O doom.py`.
+so dropping the file here lets you just run `tpy doom.py`.
 
 ## Files
 
@@ -62,13 +62,13 @@ texture cases without `Optional`.
 `ClipBufferNode` is the exception: it is a recursive type that *owns* its
 children, so those are `Box[ClipBufferNode]`.
 
-**`Int32(...)` instead of `int(...)` for every coordinate conversion.** In
+**`int32(...)` instead of `int(...)` for every coordinate conversion.** In
 TurboPython `int` means arbitrary-precision `BigInt`, so `int(leftX + dx * x)`
 built a BigInt per pixel. This is the single most important change in the port
 and it is invisible: it compiles cleanly and produces identical output.
 
 **Widening `struct.unpack_from` results.** The macro yields exactly-sized types
-(`UInt16`, `UInt8`), which then collide with ordinary `Int32` arithmetic, so
+(`uint16`, `uint8`), which then collide with ordinary `int32` arithmetic, so
 each unpacked field is widened where it is read.
 
 **Owned copies of `bytes` slices.** Slicing `bytes` yields a non-owning view, so
@@ -124,7 +124,7 @@ engine is only ever imported.
 The entry point also has a headless mode used to verify the port:
 
 ```bash
-tpy -O doom.py path/to/DOOM1.WAD dump 60     # render 60 frames -> frame.raw
+tpy doom.py path/to/DOOM1.WAD dump 60  # render 60 frames -> frame.raw
 ```
 
 Frames are deterministic when the player does not move, so this writes the

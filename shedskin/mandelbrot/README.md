@@ -20,7 +20,7 @@ The original states no license.
 
 ## Changes from the original
 
-- Annotated `mandelbrot()` — `max_iterations: Int32 = 1000`, returning `None`.
+- Annotated `mandelbrot()` — `max_iterations: int32 = 1000`, returning `None`.
 - `print('TIME %.2f' % (time.time()-t0))` became an f-string. TurboPython has no
   printf-style `%` formatting on `str`.
 - `zi` and `zr` are initialised to `0.0` instead of `0` — see below.
@@ -31,7 +31,7 @@ the output are the original's.
 ## TurboPython bugs worked around
 
 - **`zi = 0` / `zr = 0` produced silently wrong results.** These locals are inferred
-  as `Int32` from the integer literal, then assigned floats inside the loop. That
+  as `int32` from the integer literal, then assigned floats inside the loop. That
   compiles without error or warning, but the values are read back **truncated to
   integers** by the arithmetic in the following iteration. Every one of the 6,084
   points then tested as inside the set, and the program printed a solid block of

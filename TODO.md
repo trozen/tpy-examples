@@ -56,7 +56,7 @@ against tpy-lang.
 - `collatz` — builds its lookup tables with self-assigning comprehensions
   (`lookup_c = [c + (i%2) for (i, c) in zip(lookup_multistep, lookup_c)]`). That form
   emits invalid C++ (`&*` applied to a value-typed slot), so it cannot be ported
-  without restructuring. Int64 annotations were otherwise sufficient.
+  without restructuring. int64 annotations were otherwise sufficient.
 - `sieve` — uses extended slice assignment (`sieve[bottom::si] = ...`) and mutates
   the list it is iterating; also assigns `n` inside a loop then reuses it as a
   function-level loop variable.

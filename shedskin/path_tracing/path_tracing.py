@@ -3,14 +3,14 @@ from math import sqrt, inf
 import sys
 import time
 from typing import Final, Protocol
-from tpy import Int32, Own, Ptr, copy, dynamic
+from tpy import int32, Own, Ptr, copy, dynamic
 from tplib import Box
 
 # path tracer, (c) jonas wagner (http://29a.ch/)
 # http://29a.ch/2010/5/17/path-tracing-a-cornell-box-in-javascript
 # converted to Python by <anonymous>
 
-ITERATIONS: Final[Int32] = 10  # should be much higher for good quality
+ITERATIONS: Final[int32] = 10  # should be much higher for good quality
 
 
 class V3:
@@ -163,7 +163,7 @@ class Material(Surface):
 
     def __init__(self, color: V3, emission: V3 | None = None) -> None:
         self.color = copy(color)
-        self.emission = V3(0.0, 0.0, 0.0) if emission is None else emission
+        self.emission = V3(0.0, 0.0, 0.0) if emission is None else copy(emission)
 
     def bounce(self, ray: Ray, normal: V3) -> Own[V3]:
         return getRandomNormalInHemisphere(normal)
@@ -223,10 +223,10 @@ class Body:
 
 
 class Output:
-    width: Int32
-    height: Int32
+    width: int32
+    height: int32
 
-    def __init__(self, width: Int32, height: Int32) -> None:
+    def __init__(self, width: int32, height: int32) -> None:
         self.width = width
         self.height = height
 
@@ -279,7 +279,7 @@ class Renderer:
                 x += xstep
             y += ystep
 
-    def trace(self, ray: Ray, n: Int32) -> Own[V3]:
+    def trace(self, ray: Ray, n: int32) -> Own[V3]:
         mint = inf
 
         # trace no more than 5 bounces
@@ -314,11 +314,11 @@ class Renderer:
         )
 
     @staticmethod
-    def cmap(x: float) -> Int32:
-        return 0 if x < 0.0 else (255 if x > 1.0 else Int32(x * 255))
+    def cmap(x: float) -> int32:
+        return 0 if x < 0.0 else (255 if x > 1.0 else int32(x * 255))
 
     # / Write image to PPM file
-    def saveFrame(self, filename: str, nframe: Int32) -> None:
+    def saveFrame(self, filename: str, nframe: int32) -> None:
         fout = open(filename, "w")
         fout.write(f"P3\n{self.scene.output.width} {self.scene.output.height}\n255\n")
         for p in self.buffer:
@@ -330,7 +330,7 @@ class Renderer:
         fout.close()
 
 
-def main(iterations: Int32) -> None:
+def main(iterations: int32) -> None:
     width = 320
     height = 240
 
@@ -395,7 +395,7 @@ if __name__ == '__main__':
         # one render at the requested quality, instead of the timing loop
         t0 = time.time()
         seed(0)
-        main(Int32(int(argv[0])))
+        main(int32(int(argv[0])))
         print()
         print(f'TIME {time.time()-t0:.2f}')
     else:

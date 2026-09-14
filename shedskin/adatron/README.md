@@ -27,7 +27,7 @@ This port needed more than the others in this directory. Every change is listed.
 - `Protein` gained class-level field declarations. TurboPython stores fields inline
   and has no `__dict__`, so every attribute must be declared.
 - Explicit element types where a literal would otherwise pin a narrower type:
-  `labels: list[Int32] = [-1] * 4` (otherwise `list[IntLiteral(-1)]`),
+  `labels: list[int32] = [-1] * 4` (otherwise `list[IntLiteral(-1)]`),
   and likewise for `bias`, `labelalphas`, `max_differences`, `alphas`, `betas`,
   `predictions` and `current_predictions`.
 - `PROTEINS: "list[Protein]" = []`. The annotation is **quoted deliberately**:
@@ -53,8 +53,8 @@ This port needed more than the others in this directory. Every change is listed.
   TurboPython requires a return on every path; the original relies on Python's
   implicit `return None`, and both added returns are unreachable.
 - `str(...)` around `AMINOACIDS` and `sequence` element access — indexing a `str`
-  yields a `Char`, and the composition dictionaries are keyed by `str` so their keys
-  can be sorted (`Char` does not satisfy `Comparable`).
+  yields a `char`, and the composition dictionaries are keyed by `str` so their keys
+  can be sorted (`char` does not satisfy `Comparable`).
 - `print("Starting iteration %s..." % iteration)` and the closing `TIME` line became
   f-strings; there is no printf-style `%` formatting on `str`.
 

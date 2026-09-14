@@ -4,13 +4,13 @@ import random
 
 from typing import Final
 
-from tpy import Int32, Own, Ptr, UInt8, readonly
+from tpy import int32, Own, Ptr, uint8, readonly
 from tplib import Box
 
 # Annotated so they can be imported: an unannotated module-level variable is
-# not exported in TurboPython 0.5.1.
-WIDTH: Final[Int32] = 800
-HEIGHT: Final[Int32] = 600
+# not exported by TurboPython.
+WIDTH: Final[int32] = 800
+HEIGHT: Final[int32] = 600
 
 WIDTH_2 = WIDTH//2
 HEIGHT_2 = HEIGHT//2
@@ -24,22 +24,22 @@ FLOOR_Y_INV = [1.0 / (y - HEIGHT_2) if y > HEIGHT_2 else 0.0
 CEIL_Y_INV = [1.0 / (HEIGHT_2 - y) if y < HEIGHT_2 else 0.0
               for y in range(HEIGHT)]
 
-OSCILLATION = [Int32(13 + 13 * math.sin(2 * math.pi * (i / 255)))
+OSCILLATION = [int32(13 + 13 * math.sin(2 * math.pi * (i / 255)))
                for i in range(256)]
 
 
 class Vertex:
-    x: Int32
-    y: Int32
+    x: int32
+    y: int32
 
-    def __init__(self, x: Int32, y: Int32) -> None:
+    def __init__(self, x: int32, y: int32) -> None:
         self.x = x
         self.y = y
 
 
 class Sidedef:
-    offset_x: Int32
-    offset_y: Int32
+    offset_x: int32
+    offset_y: int32
     # Ptr: the Map owns the textures and sectors; a sidedef only refers to them.
     # Ptr is nullable, which also covers the missing-texture case.
     upper_texture: Ptr[Texture]
@@ -48,7 +48,7 @@ class Sidedef:
     sector: Ptr[Sector]
     skyhack: bool
 
-    def __init__(self, offset_x: Int32, offset_y: Int32,
+    def __init__(self, offset_x: int32, offset_y: int32,
                  upper_texture: Ptr[Texture], lower_texture: Ptr[Texture],
                  middle_texture: Ptr[Texture], sector: Ptr[Sector]) -> None:
         self.offset_x = offset_x
@@ -63,12 +63,12 @@ class Sidedef:
 class Linedef:
     vertex_start: Ptr[Vertex]
     vertex_end: Ptr[Vertex]
-    special_type: Int32
+    special_type: int32
     sidedef_front: Ptr[Sidedef]
     sidedef_back: Ptr[Sidedef]
 
     def __init__(self, vertex_start: Ptr[Vertex], vertex_end: Ptr[Vertex],
-                 special_type: Int32, sidedef_front: Ptr[Sidedef],
+                 special_type: int32, sidedef_front: Ptr[Sidedef],
                  sidedef_back: Ptr[Sidedef]) -> None:
         self.vertex_start = vertex_start
         self.vertex_end = vertex_end
@@ -80,52 +80,52 @@ class Linedef:
 # Moved ahead of Sector: Sector stores a Flat and a Picture by value, and
 # generated classes appear in source order with no forward declarations.
 class Flat:
-    data: list[list[list[Int32]]]
+    data: list[list[list[int32]]]
 
     def __init__(self, data: list[bytes]) -> None:
         self.data = [[[d[64*y+x] for y in range(64)]
                      for x in range(64)] for d in data]
 
-    def get_data(self, frame_count: Int32) -> list[list[Int32]]:
+    def get_data(self, frame_count: int32) -> list[list[int32]]:
         return self.data[(frame_count >> 4) % len(self.data)]
 
 
 class Picture:
-    width: Int32
-    height: Int32
-    data: list[list[Int32]]
+    width: int32
+    height: int32
+    data: list[list[int32]]
 
     def __init__(self, data: bytes) -> None:
-        # struct.unpack_from yields exactly-sized types (UInt16/UInt8 here), so
-        # the values are widened to Int32 before they meet ordinary arithmetic.
-        width = Int32(unpack_from('<HHhh', data, 0)[0])
-        height = Int32(unpack_from('<HHhh', data, 0)[1])
+        # struct.unpack_from yields exactly-sized types (uint16/uint8 here), so
+        # the values are widened to int32 before they meet ordinary arithmetic.
+        width = int32(unpack_from('<HHhh', data, 0)[0])
+        height = int32(unpack_from('<HHhh', data, 0)[1])
         self.width = width
         self.height = height
         self.data = [[0 for k in range(height)] for j in range(width)]
 
         for j in range(width):
-            col_offset = Int32(unpack_from('<H', data, 8+4*j)[0])
-            y_offset = Int32(unpack_from('<B', data, col_offset)[0])
-            length = Int32(unpack_from('<BB', data, col_offset+1)[0])
+            col_offset = int32(unpack_from('<H', data, 8+4*j)[0])
+            y_offset = int32(unpack_from('<B', data, col_offset)[0])
+            length = int32(unpack_from('<BB', data, col_offset+1)[0])
             for y in range(length):
                 self.data[j][y+y_offset] = data[col_offset+3+y]
 
 
 class Sector:
-    floor_h: Int32
-    ceil_h: Int32
+    floor_h: int32
+    ceil_h: int32
     floor_texture: bytes
     ceil_texture: bytes
-    light_level: Int32
-    special_type: Int32
+    light_level: int32
+    special_type: int32
     floor_flat: Flat
     ceil_flat: Flat
     ceil_pic: Picture | None
     random: list[bool]
 
-    def __init__(self, floor_h: Int32, ceil_h: Int32, floor_texture: bytes,
-                 ceil_texture: bytes, light_level: Int32, special_type: Int32,
+    def __init__(self, floor_h: int32, ceil_h: int32, floor_texture: bytes,
+                 ceil_texture: bytes, light_level: int32, special_type: int32,
                  floor_flat: Own[Flat], ceil_flat: Own[Flat],
                  ceil_pic: Own[Picture] | None) -> None:
         self.floor_h = floor_h
@@ -151,20 +151,20 @@ class SubSector:
 class Seg:
     vertex_start: Ptr[Vertex]
     vertex_end: Ptr[Vertex]
-    angle: Int32
+    angle: int32
     linedef: Ptr[Linedef]
     sidedef_front: Ptr[Sidedef]
     sidedef_back: Ptr[Sidedef]
     is_portal: bool
-    offset: Int32
+    offset: int32
     sector_front: Ptr[Sector]
     sector_back: Ptr[Sector]
     length: float
 
     def __init__(self, vertex_start: Ptr[Vertex], vertex_end: Ptr[Vertex],
-                 angle: Int32, linedef: Ptr[Linedef],
+                 angle: int32, linedef: Ptr[Linedef],
                  sidedef_front: Ptr[Sidedef], sidedef_back: Ptr[Sidedef],
-                 is_portal: bool, offset: Int32,
+                 is_portal: bool, offset: int32,
                  sector_front: Ptr[Sector], sector_back: Ptr[Sector]) -> None:
         self.vertex_start = vertex_start
         self.vertex_end = vertex_end
@@ -182,16 +182,16 @@ class Seg:
 
 
 class BSPNode:
-    partition_x: Int32
-    partition_y: Int32
-    change_partition_x: Int32
-    change_partition_y: Int32
-    rchild_id: Int32
-    lchild_id: Int32
+    partition_x: int32
+    partition_y: int32
+    change_partition_x: int32
+    change_partition_y: int32
+    rchild_id: int32
+    lchild_id: int32
 
-    def __init__(self, partition_x: Int32, partition_y: Int32,
-                 change_partition_x: Int32, change_partition_y: Int32,
-                 rchild_id: Int32, lchild_id: Int32) -> None:
+    def __init__(self, partition_x: int32, partition_y: int32,
+                 change_partition_x: int32, change_partition_y: int32,
+                 rchild_id: int32, lchild_id: int32) -> None:
         self.partition_x = partition_x
         self.partition_y = partition_y
         self.change_partition_x = change_partition_x
@@ -222,9 +222,9 @@ class Thing:
     x: float
     y: float
     angle: float
-    type_: Int32
+    type_: int32
 
-    def __init__(self, x: Int32, y: Int32, angle: Int32, type_: Int32) -> None:
+    def __init__(self, x: int32, y: int32, angle: int32, type_: int32) -> None:
         self.x = float(x)
         self.y = float(y)
         self.angle = math.radians(90)
@@ -265,12 +265,12 @@ class Player:
 
 class Texture:
     name: bytes
-    data: list[list[Int32]]
-    width: Int32
-    height: Int32
+    data: list[list[int32]]
+    width: int32
+    height: int32
 
-    def __init__(self, name: bytes, data: Own[list[list[Int32]]],
-                 width: Int32, height: Int32) -> None:
+    def __init__(self, name: bytes, data: Own[list[list[int32]]],
+                 width: int32, height: int32) -> None:
         self.name = name
         self.data = data
         self.width = width
@@ -278,7 +278,7 @@ class Texture:
 
 
 class Colormap:
-    data: list[Int32]
+    data: list[int32]
 
     def __init__(self, data: bytes) -> None:
         self.data = []
@@ -288,7 +288,7 @@ class Colormap:
 
 class Map:
     entry_data: dict[bytes, bytes]
-    palette: list[tuple[Int32, Int32, Int32]]
+    palette: list[tuple[int32, int32, int32]]
     colormaps: list[Colormap]
     patches: list[Picture | None]
     textures: dict[bytes, Texture]
@@ -340,8 +340,8 @@ class Map:
 
     def extract_entries(self, filepath: str, mapname: str) -> None:
         data = open(filepath, 'rb').read()
-        nentries = Int32(unpack_from('<II', data, 4)[0])
-        dir_offset = Int32(unpack_from('<II', data, 4)[1])
+        nentries = int32(unpack_from('<II', data, 4)[0])
+        dir_offset = int32(unpack_from('<II', data, 4)[1])
 
         self.entry_data = {}
         inmap = False
@@ -350,8 +350,8 @@ class Map:
         # filter entries that apply to map
         for i in range(nentries):
             offset_u, length_u, name = unpack_from('<II8s', data, dir_offset+i*16)
-            offset = Int32(offset_u)
-            length = Int32(length_u)
+            offset = int32(offset_u)
+            length = int32(length_u)
             # rstrip yields a non-owning view; an owned copy is needed to store
             # it and to look it up in a dict[bytes, ...].
             name = bytes(name.rstrip(b'\0'))
@@ -368,8 +368,8 @@ class Map:
         data = self.entry_data[b'VERTEXES']
         for j in range(len(data)//4):
             x_u, y_u = unpack_from('<hh', data, j*4)
-            x = Int32(x_u)
-            y = Int32(y_u)
+            x = int32(x_u)
+            y = int32(y_u)
             self.vertices.append(Vertex(x, y))
 
     def extract_linedefs(self) -> None:
@@ -378,11 +378,11 @@ class Map:
         for j in range(len(data)//14):
             (vs_u, ve_u, _, st_u, _, sf_u, sb_u) = \
                 unpack_from('<HHHHHHH', data, j*14)
-            vertex_start = Int32(vs_u)
-            vertex_end = Int32(ve_u)
-            special_type = Int32(st_u)
-            sidedef_front = Int32(sf_u)
-            sidedef_back = Int32(sb_u)
+            vertex_start = int32(vs_u)
+            vertex_end = int32(ve_u)
+            special_type = int32(st_u)
+            sidedef_front = int32(sf_u)
+            sidedef_back = int32(sb_u)
             vertex_a = self.vertices[vertex_start]
             vertex_b = self.vertices[vertex_end]
             sidedef_a = self.sidedefs[sidedef_front]
@@ -409,9 +409,9 @@ class Map:
             (ox_u, oy_u, upper_texture_name, lower_texture_name,
                 middle_texture_name, sector_nr_u) = \
                     unpack_from('<HH8s8s8sH', data, j*30)
-            offset_x = Int32(ox_u)
-            offset_y = Int32(oy_u)
-            sector_nr = Int32(sector_nr_u)
+            offset_x = int32(ox_u)
+            offset_y = int32(oy_u)
+            sector_nr = int32(sector_nr_u)
 
             # Ptr into the Map-owned texture table; .get() would yield a value.
             upper_texture: Ptr[Texture] = None
@@ -437,10 +437,10 @@ class Map:
         for j in range(len(data)//26):
             (fh_u, ch_u, floor_texture, ceil_texture, ll_u, st_u, _) = \
                     unpack_from('<hh8s8sHhh', data, j*26)
-            floor_h = Int32(fh_u)
-            ceil_h = Int32(ch_u)
-            light_level = Int32(ll_u)
-            special_type = Int32(st_u)
+            floor_h = int32(fh_u)
+            ceil_h = int32(ch_u)
+            light_level = int32(ll_u)
+            special_type = int32(st_u)
             light_level &= 0xff
             floor_texture = bytes(floor_texture.rstrip(b'\0'))
             if floor_texture.startswith(b'NUKAGE'):
@@ -462,7 +462,7 @@ class Map:
     def extract_patches(self) -> None:
         self.patches = []
         data = self.entry_data[b'PNAMES']
-        n_pnames = Int32(unpack_from('<i', data, 0)[0])
+        n_pnames = int32(unpack_from('<i', data, 0)[0])
         for j in range(n_pnames):
             patch_name = bytes(data[4+j*8:4+(j+1)*8].rstrip(b'\0').upper())
             patch: Picture | None = None
@@ -475,14 +475,14 @@ class Map:
     def extract_textures(self) -> None:
         self.textures = {}
         data = self.entry_data[b'TEXTURE1']
-        n_textures = Int32(unpack_from('<i', data, 0)[0])
+        n_textures = int32(unpack_from('<i', data, 0)[0])
         for j in range(n_textures):
-            offset = Int32(unpack_from('<i', data, 4+j*4)[0])
+            offset = int32(unpack_from('<i', data, 4+j*4)[0])
             (name, _, width_u, height_u, _, n_patches_u) = \
                 unpack_from('<8sIHHIH', data, offset)
-            width = Int32(width_u)
-            height = Int32(height_u)
-            n_patches = Int32(n_patches_u)
+            width = int32(width_u)
+            height = int32(height_u)
+            n_patches = int32(n_patches_u)
             # rstrip yields a non-owning view; an owned copy is needed to store
             # it and to look it up in a dict[bytes, ...].
             name = bytes(name.rstrip(b'\0'))
@@ -490,9 +490,9 @@ class Map:
             for k in range(n_patches):
                 ox_u, oy_u, pi_u, _, _ = \
                     unpack_from('<hhhhh', data, offset+22+k*10)
-                offset_x = Int32(ox_u)
-                offset_y = Int32(oy_u)
-                patch_index = Int32(pi_u)
+                offset_x = int32(ox_u)
+                offset_y = int32(oy_u)
+                patch_index = int32(pi_u)
                 pic = self.patches[patch_index]
                 # A PNAMES entry with no matching lump stays None; a texture
                 # referencing one would be a malformed WAD.
@@ -510,9 +510,9 @@ class Map:
         data = self.entry_data[b'PLAYPAL']
         for j in range(256):
             r_u, g_u, b_u = unpack_from('<BBB', data, 3*j)
-            r = Int32(r_u)
-            g = Int32(g_u)
-            b = Int32(b_u)
+            r = int32(r_u)
+            g = int32(g_u)
+            b = int32(b_u)
             self.palette.append((r, g, b))
 
     def extract_colormaps(self) -> None:
@@ -527,12 +527,12 @@ class Map:
         for j in range(len(data)//12):
             vs_u, ve_u, angle_u, ln_u, dir_u, off_u = \
                 unpack_from('<HHhHHh', data, j*12)
-            vertex_start = Int32(vs_u)
-            vertex_end = Int32(ve_u)
-            angle = Int32(angle_u)
-            linedef_nr = Int32(ln_u)
-            direction = Int32(dir_u)
-            offset = Int32(off_u)
+            vertex_start = int32(vs_u)
+            vertex_end = int32(ve_u)
+            angle = int32(angle_u)
+            linedef_nr = int32(ln_u)
+            direction = int32(dir_u)
+            offset = int32(off_u)
             vertex_a = self.vertices[vertex_start]
             vertex_b = self.vertices[vertex_end]
             linedef = self.linedefs[linedef_nr]
@@ -562,8 +562,8 @@ class Map:
         data = self.entry_data[b'SSECTORS']
         for j in range(len(data)//4):
             sc_u, fs_u = unpack_from('<HH', data, j*4)
-            seg_count = Int32(sc_u)
-            first_seg = Int32(fs_u)
+            seg_count = int32(sc_u)
+            first_seg = int32(fs_u)
             # The Map owns the segs; a subsector only points at its slice of
             # them, so the range is collected as pointers rather than sliced
             # (a slice would be a non-owning Span of values).
@@ -579,12 +579,12 @@ class Map:
             (px_u, py_u, cpx_u, cpy_u,
              _, _, _,  _, _, _, _, _, rc_u, lc_u) = \
                 unpack_from('<hhhhhhhhhhhhhh', data, j*28)
-            partition_x = Int32(px_u)
-            partition_y = Int32(py_u)
-            change_partition_x = Int32(cpx_u)
-            change_partition_y = Int32(cpy_u)
-            rchild_id = Int32(rc_u)
-            lchild_id = Int32(lc_u)
+            partition_x = int32(px_u)
+            partition_y = int32(py_u)
+            change_partition_x = int32(cpx_u)
+            change_partition_y = int32(cpy_u)
+            rchild_id = int32(rc_u)
+            lchild_id = int32(lc_u)
             bspnode = BSPNode(partition_x, partition_y, change_partition_x,
                               change_partition_y, rchild_id, lchild_id)
             self.bspnodes.append(bspnode)
@@ -594,26 +594,26 @@ class Map:
         data = self.entry_data[b'THINGS']
         for j in range(len(data)//10):
             x_u, y_u, angle_u, type_u, _ = unpack_from('<hhhhh', data, j*10)
-            x = Int32(x_u)
-            y = Int32(y_u)
-            angle = Int32(angle_u)
-            type_ = Int32(type_u)
+            x = int32(x_u)
+            y = int32(y_u)
+            angle = int32(angle_u)
+            type_ = int32(type_u)
             self.things.append(Thing(x, y, angle, type_))
 
 
 class ClipBufferNode:
-    start: Int32
-    end: Int32
+    start: int32
+    end: int32
     occluded: bool
     partitioned: bool
-    partitionPoint: Int32
+    partitionPoint: int32
     # A node owns its children, and the type is recursive, so the children need
     # an indirection: Box is the heap-allocated owning container for exactly
     # this shape.
     left: Box[ClipBufferNode] | None
     right: Box[ClipBufferNode] | None
 
-    def __init__(self, start: Int32, end: Int32) -> None:
+    def __init__(self, start: int32, end: int32) -> None:
         self.start = start
         self.end = end
         self.occluded = False
@@ -622,7 +622,7 @@ class ClipBufferNode:
         self.partitioned = False
         self.partitionPoint = 0
 
-    def checkSpan(self, start: Int32, end: Int32, result: list[Int32],
+    def checkSpan(self, start: int32, end: int32, result: list[int32],
                   add: bool) -> None:
         # span completely occluded by node
         if self.occluded and start >= self.start and end <= self.end:
@@ -687,7 +687,7 @@ class ClipBufferNode:
             self.occluded = True
 
 
-def get_special_light(sector: Ptr[Sector], frame_count: Int32) -> Int32:
+def get_special_light(sector: Ptr[Sector], frame_count: int32) -> int32:
     special_type = sector.special_type
 
     if special_type in (1, 17):
@@ -706,10 +706,10 @@ def get_special_light(sector: Ptr[Sector], frame_count: Int32) -> Int32:
 
 
 def get_wall_colormap(colormaps: readonly[list[Colormap]], currentZ: float,
-                      seg: Seg, frame_count: Int32) -> readonly[Colormap]:
+                      seg: Seg, frame_count: int32) -> readonly[Colormap]:
     sector = seg.sector_front
 
-    colorMapIndex = Int32((currentZ - 5) * 0.05)
+    colorMapIndex = int32((currentZ - 5) * 0.05)
     colorMapIndex = min(colorMapIndex, 32 - (sector.light_level >> 3))
 
     colorMapIndex += ((((seg.angle + 8192) & 0x7fff) - 16384) & 0x7fff) // 3200
@@ -720,10 +720,10 @@ def get_wall_colormap(colormaps: readonly[list[Colormap]], currentZ: float,
 
 
 def get_flat_colormap(colormaps: readonly[list[Colormap]], currentZ: float,
-                      seg: Seg, frame_count: Int32) -> readonly[Colormap]:
+                      seg: Seg, frame_count: int32) -> readonly[Colormap]:
     sector = seg.sector_front
 
-    colorMapIndex = Int32((currentZ - 5) * 0.05)
+    colorMapIndex = int32((currentZ - 5) * 0.05)
     colorMapIndex = min(colorMapIndex, 32 - (sector.light_level >> 3))
 
     colorMapIndex += get_special_light(sector, frame_count)
@@ -732,8 +732,8 @@ def get_flat_colormap(colormaps: readonly[list[Colormap]], currentZ: float,
     return colormaps[colorMapIndex]
 
 
-def draw_wall_col(drawsurf: bytearray, x: Int32, middleMinY: Int32,
-                  middleMaxY: Int32, wallTexture: Ptr[Texture],
+def draw_wall_col(drawsurf: bytearray, x: int32, middleMinY: int32,
+                  middleMaxY: int32, wallTexture: Ptr[Texture],
                   currentTextureX: float, currentZ: float,
                   middleTextureY: float, middleTextureYStep: float,
                   colormap: readonly[Colormap]) -> None:
@@ -741,7 +741,7 @@ def draw_wall_col(drawsurf: bytearray, x: Int32, middleMinY: Int32,
     height = wallTexture.height
     wallTextureData = wallTexture.data
 
-    tx = Int32(currentTextureX * currentZ) % width
+    tx = int32(currentTextureX * currentZ) % width
     # tx is fixed for the whole column, so the texture column and the colormap
     # table are looked up once instead of per pixel. Each of those was a
     # bounds-checked index inside the loop.
@@ -749,17 +749,17 @@ def draw_wall_col(drawsurf: bytearray, x: Int32, middleMinY: Int32,
     cdata = colormap.data
     row = middleMinY * WIDTH + x
     for y in range(middleMinY, middleMaxY):
-        ty = Int32(middleTextureY) % height
-        drawsurf[row] = UInt8(cdata[column[ty]])
+        ty = int32(middleTextureY) % height
+        drawsurf[row] = uint8(cdata[column[ty]])
         middleTextureY += middleTextureYStep
         row += WIDTH
 
 
-def draw_flat_col(drawsurf: bytearray, x: Int32, ceilMin: Int32, ceilMax: Int32,
-                  seg: Seg, player: Player, flatTexture: list[list[Int32]],
+def draw_flat_col(drawsurf: bytearray, x: int32, ceilMin: int32, ceilMax: int32,
+                  seg: Seg, player: Player, flatTexture: list[list[int32]],
                   flat_h: float, INV: list[float], sign: float,
                   colormaps: readonly[list[Colormap]],
-                  frame_count: Int32) -> None:
+                  frame_count: int32) -> None:
     # Everything here that does not depend on y is lifted out of the loop. The
     # groupings are kept exactly as the original evaluates them, so the
     # arithmetic is bit-for-bit identical -- only the repetition is removed.
@@ -780,7 +780,7 @@ def draw_flat_col(drawsurf: bytearray, x: Int32, ceilMin: Int32, ceilMax: Int32,
     for y in range(ceilMin, ceilMax):
         z = zbase * INV[y]
 
-        colorMapIndex = Int32((z - 5) * 0.05)
+        colorMapIndex = int32((z - 5) * 0.05)
         colorMapIndex = min(colorMapIndex, light_cap)
         colorMapIndex += special
         colorMapIndex = max(min(colorMapIndex, 31), 0)
@@ -799,15 +799,15 @@ def draw_flat_col(drawsurf: bytearray, x: Int32, ceilMin: Int32, ceilMax: Int32,
         dx = (rightX - leftX) * HEIGHT_INV
         dy = (rightY - leftY) * HEIGHT_INV
 
-        tx = Int32(leftX + dx * x) & 0x3f
-        ty = Int32(leftY + dy * x) & 0x3f
+        tx = int32(leftX + dx * x) & 0x3f
+        ty = int32(leftY + dy * x) & 0x3f
 
-        drawsurf[row] = UInt8(colormap.data[flatTexture[tx][ty]])
+        drawsurf[row] = uint8(colormap.data[flatTexture[tx][ty]])
         row += WIDTH
 
 
-def draw_sky_col(drawsurf: bytearray, x: Int32, upperMinY: Int32,
-                 upperMaxY: Int32, seg: Seg, player: Player) -> None:
+def draw_sky_col(drawsurf: bytearray, x: int32, upperMinY: int32,
+                 upperMaxY: int32, seg: Seg, player: Player) -> None:
     ceil_pic = seg.sector_front.ceil_pic
     # Only called for segs whose ceiling is the sky texture, which resolved.
     assert ceil_pic is not None
@@ -824,18 +824,18 @@ def draw_sky_col(drawsurf: bytearray, x: Int32, upperMinY: Int32,
     dy = ceilingTextureHeight / (WIDTH//2)
 
     for y in range(upperMinY, upperMaxY):
-        tx = Int32(dx * x - textureOffsetX) % ceilingTextureWidth
-        ty = Int32(y * dy) % ceilingTextureHeight
-        drawsurf[y*WIDTH+x] = UInt8(ceilTextureData[tx][ty])
+        tx = int32(dx * x - textureOffsetX) % ceilingTextureWidth
+        ty = int32(y * dy) % ceilingTextureHeight
+        drawsurf[y*WIDTH+x] = uint8(ceilTextureData[tx][ty])
 
 
-def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
-             scrXB: Int32, cbuffer: ClipBufferNode, za: float, zb: float,
+def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: int32,
+             scrXB: int32, cbuffer: ClipBufferNode, za: float, zb: float,
              textureX0: float, textureX1: float, frontSidedef: Ptr[Sidedef],
-             lowerOcclusion: list[Int32], upperOcclusion: list[Int32],
-             frame_count: Int32) -> None:
+             lowerOcclusion: list[int32], upperOcclusion: list[int32],
+             frame_count: int32) -> None:
     # get non-occluded clips from cbuffer
-    cbufferResult: list[Int32] = []
+    cbufferResult: list[int32] = []
     cbuffer.checkSpan(scrXA, scrXB, cbufferResult, not seg.is_portal)
 
     # no visible clips
@@ -930,8 +930,8 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
             currentZ = 1.0 / currentZInv
             colormap = get_wall_colormap(colormaps, currentZ, seg, frame_count)
 
-            middleMaxY = Int32(currentMiddleFloor)
-            middleMinY = Int32(currentMiddleCeil)
+            middleMaxY = int32(currentMiddleFloor)
+            middleMinY = int32(currentMiddleCeil)
             middleDy = middleMaxY - middleMinY
 
             if middleDy == 0:  # on collision with wall
@@ -956,7 +956,7 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
                               middleTextureY, middleTextureYStep, colormap)
 
             # floor
-            ceilMin = Int32(max(lowerOcclusion[x], middleMaxY))
+            ceilMin = int32(max(lowerOcclusion[x], middleMaxY))
             if ceilMin < upperOcclusion[x]:
                 floor_flat = sector_front.floor_flat.get_data(frame_count)
                 draw_flat_col(drawsurf, x, ceilMin, upperOcclusion[x], seg,
@@ -966,8 +966,8 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
 
             # lower wall
             if hasLowerWall:
-                lowerMaxY = Int32(currentLowerFloor)
-                lowerMinY = Int32(currentLowerCeil)
+                lowerMaxY = int32(currentLowerFloor)
+                lowerMinY = int32(currentLowerCeil)
 
                 lowerDy = lowerMaxY - lowerMinY
                 lowerTextureYStep = (backFloor - frontFloor) / lowerDy
@@ -995,7 +995,7 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
                 currentLowerFloor += lowerfloorStep
 
             # ceil
-            ceilMax = Int32(min(upperOcclusion[x], middleMinY))
+            ceilMax = int32(min(upperOcclusion[x], middleMinY))
             if ceilMax > lowerOcclusion[x]:
                 # sky
                 if sector_front.ceil_pic is not None:
@@ -1012,8 +1012,8 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
 
             # upper wall
             if hasUpperWall:
-                upperMaxY = Int32(currentUpperFloor)
-                upperMinY = Int32(currentUpperCeil)
+                upperMaxY = int32(currentUpperFloor)
+                upperMinY = int32(currentUpperCeil)
 
                 upperDy = upperMaxY - upperMinY
                 upperTextureYStep = (frontCeil - backCeil) / upperDy
@@ -1051,11 +1051,11 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: Int32,
             currentTextureX += textureXStep
 
 
-def render(map_: Map, frame_count: Int32) -> Own[bytearray]:
+def render(map_: Map, frame_count: int32) -> Own[bytearray]:
     drawsurf = bytearray(WIDTH * HEIGHT)
 
-    lowerOcclusion: list[Int32] = [0] * WIDTH
-    upperOcclusion: list[Int32] = [HEIGHT] * WIDTH
+    lowerOcclusion: list[int32] = [0] * WIDTH
+    upperOcclusion: list[int32] = [HEIGHT] * WIDTH
 
     cbuffer = ClipBufferNode(0, WIDTH-1)
 
@@ -1102,8 +1102,8 @@ def render(map_: Map, frame_count: Int32) -> Own[bytearray]:
                     textureX1 = textureX0 + p * (textureX1 - textureX0)
                     zb = 0.1
 
-                scrXA = Int32(WIDTH_2 * xa / -za) + WIDTH_2
-                scrXB = Int32(WIDTH_2 * xb / -zb) + WIDTH_2
+                scrXA = int32(WIDTH_2 * xa / -za) + WIDTH_2
+                scrXB = int32(WIDTH_2 * xb / -zb) + WIDTH_2
 
                 if scrXA < scrXB:
                     draw_seg(seg, map_, drawsurf, scrXA, scrXB, cbuffer, za,

@@ -22,7 +22,7 @@ Ports are taken from upstream revision
 
 ```bash
 cd <example-name>
-tpy -O <example-name>.py
+tpy <example-name>.py
 ```
 
 The entry point is always `<example-name>.py`. Examples needing extra setup say so

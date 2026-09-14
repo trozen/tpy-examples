@@ -27,7 +27,7 @@ The original states no license.
 ## Run
 
 ```bash
-tpy -O oliva2.py
+tpy oliva2.py
 ```
 
 Writes `oliva.pgm` (640×480, 8-bit greyscale) in the current directory. Any image

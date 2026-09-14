@@ -5,15 +5,15 @@ sphere to a PPM image. ~409 lines.
 
 ![The Cornell box rendered by this example](path_tracing.png)
 
-*`tpy -O path_tracing.py 10000`. Plain `tpy -O path_tracing.py` runs the
+*`tpy path_tracing.py 10000`. Plain `tpy path_tracing.py` runs the
 original's benchmark instead, at ten samples per pixel — far grainier.*
 
 ## Run
 
 ```bash
-tpy -O path_tracing.py            # the original's timing run: ten renders at
-                                  # ten samples per pixel, seeds 0..9
-tpy -O path_tracing.py 2000       # one render at 2000 samples per pixel
+tpy path_tracing.py         # the original's timing run: ten renders at
+                            # ten samples per pixel, seeds 0..9
+tpy path_tracing.py 2000    # one render at 2000 samples per pixel
 ```
 
 Each sample per pixel is one ray traced through a randomly jittered point,
@@ -119,7 +119,7 @@ from `self.scene` rather than from the `scene` parameter, which has already
 been moved from, and `iterate()` reads `self.scene` directly instead of
 aliasing it into a local first.
 
-**`Int32(x * 255)` rather than `int(x * 255)`.** In TurboPython `int` is
+**`int32(x * 255)` rather than `int(x * 255)`.** In TurboPython `int` is
 arbitrary-precision, so `int()` would allocate a BigInt for every colour
 channel of every pixel.
 
@@ -136,7 +136,7 @@ channel of every pixel.
 - The driver loop at module scope moved into an `if __name__ == '__main__':`
   block, with `t0` initialised before the loop that conditionally reassigns
   it.
-- `ITERATIONS` gained a `Final[Int32]` annotation.
+- `ITERATIONS` gained a `Final[int32]` annotation.
 
 **Added: a sample count on the command line.** `main()` takes its sample
 count as an argument rather than reading the `ITERATIONS` global, and with no

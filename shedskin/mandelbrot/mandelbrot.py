@@ -5,9 +5,9 @@
 
 import time
 
-from tpy import Int32
+from tpy import int32
 
-def mandelbrot(max_iterations: Int32 = 1000) -> None:
+def mandelbrot(max_iterations: int32 = 1000) -> None:
     bailout = 16
     for y in range(-39, 39):
         line = []

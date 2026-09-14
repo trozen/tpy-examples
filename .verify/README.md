@@ -6,7 +6,7 @@ builds and runs against the compiler version the gallery says it targets.
 - `tpy/` — the compiler, as a git submodule pinned to that version. The
   submodule commit *is* the pin; `pyproject.toml` installs it into `.venv/`.
 - `test_examples.py` — builds every example under `shedskin/` and `landing/`
-  with `tpy -O`, runs all but the few that need a display or the network, and
+  with `tpy`, runs all but the few that need a display or the network, and
   compares stdout (elapsed-time lines normalised) and any written files with
   `expected/`.
 - `test_version.py` — the pinned version must match what `README.md` and
@@ -43,6 +43,6 @@ or with a compiler that contracts multiply-add by default, as clang does on
 arm64. A hash or stdout mismatch on such a machine is not on its own evidence of
 a regression.
 
-Bumping the compiler is: check out the new tag in `tpy/`, update the version in
-`README.md` and `CLAUDE.md`, run `make test`, and `make bless-all` if outputs
-legitimately changed.
+Bumping the compiler is: check out the new tag (or, for a pre-release, the new
+commit) in `tpy/`, update the version in `README.md` and `CLAUDE.md`, run
+`make test`, and `make bless-all` if outputs legitimately changed.

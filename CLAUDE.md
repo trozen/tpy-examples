@@ -29,9 +29,10 @@ When writing or modifying `.py` files compiled by tpy:
 tpy --install-agent-docs docs/
 ```
 
-Examples target **tpy-lang 0.5.1**. That version is pinned as the `.verify/tpy`
-submodule. When it changes, move the submodule to the new tag and update the
-version here and in `README.md` — the Requirements bullet and both `pip install`
+Examples target **tpy-lang 0.6.0.dev0**, a pre-release at commit `31a87a5651`.
+That commit is pinned as the `.verify/tpy` submodule. When it changes, move the
+submodule to the new commit and update the version and commit here and in
+`README.md` — the Requirements bullet and, on a release, both `pip install`
 blocks. `make test` fails while the three disagree.
 
 ## Local setup
@@ -59,8 +60,8 @@ complete step 7, so the example cannot be published.
 1. Copy the original from `tmp/shedskin/examples/<name>/` into `shedskin/<name>/`,
    along with any data files it reads from `../testdata/`.
 2. Fix the data-file paths to be local — each example is self-contained.
-3. Get it compiling with `tpy <name>.py` — the unoptimized build is quicker to
-   iterate on. See **Fidelity where it doesn't hurt** below for how far to go.
+3. Get it compiling with `tpy --debug <name>.py` — the unoptimized build is
+   quicker to iterate on. See **Fidelity where it doesn't hurt** below for how far to go.
 4. Verify the port against the original. This is done once, here, and it is what
    makes the output recorded in step 7 worth anything: the harness can only
    replay what tpy did, it cannot tell a faithful port from a plausible-looking
@@ -72,7 +73,7 @@ complete step 7, so the example cannot be published.
    output with the port's:
 
    ```bash
-   tpy -O <name>.py
+   tpy <name>.py
    python3 tmp/shedskin/examples/<name>/<name>.py
    ```
 
@@ -86,7 +87,7 @@ complete step 7, so the example cannot be published.
    later). Works only while the port stays ordinary Python plus annotations:
 
    ```bash
-   tpy -O <name>.py
+   tpy <name>.py
    PYTHONPATH=$(git rev-parse --show-toplevel)/.verify/tpy/lib/cpy python3 <name>.py
    ```
 
@@ -212,7 +213,7 @@ Attribution and license, verbatim from the source header:
 (Omit this section if there were none.)
 ```
 
-Add a **Run** section only if the example needs more than `tpy -O <name>.py` — extra
+Add a **Run** section only if the example needs more than `tpy <name>.py` — extra
 setup, downloaded assets, a system library. Otherwise the convention in
 `README.md` covers it.
 

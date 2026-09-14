@@ -30,14 +30,14 @@
 import random
 import time
 
-from tpy import copy, Int32, Own
+from tpy import copy, int32, Own
 
 # type Matrix = Array[Array[double]]
 # type Path = List[int]
 # type CitySet = HashSet[int]
 
 # int * int * int -> Matrix
-def randomMatrix(n: Int32, upperBound: Int32, seed: Int32) -> Own[list[list[float]]]:
+def randomMatrix(n: int32, upperBound: int32, seed: int32) -> Own[list[list[float]]]:
     random.seed(seed)
     m: list[list[float]] = []
     for r in range(n):
@@ -52,7 +52,7 @@ def randomMatrix(n: Int32, upperBound: Int32, seed: Int32) -> Own[list[list[floa
     return m
 
 # Path -> Path
-def wrappedPath(path: list[Int32]) -> Own[list[Int32]]:
+def wrappedPath(path: list[int32]) -> Own[list[int32]]:
     # path[1:] is a non-owning Span in TurboPython, so it cannot be concatenated;
     # the rotated copy is built directly.
     out = [path[i] for i in range(1, len(path))]
@@ -60,7 +60,7 @@ def wrappedPath(path: list[Int32]) -> Own[list[Int32]]:
     return out
 
 # Matrix * Path -> double
-def pathLength(cities: list[list[float]], path: list[Int32]) -> float:
+def pathLength(cities: list[list[float]], path: list[int32]) -> float:
     pairs = list(zip(path, wrappedPath(path)))
     # Neumaier compensated summation, spelled out. CPython's sum() has used it
     # for floats since 3.12; TurboPython's sum() accumulates naively, and the
@@ -80,13 +80,13 @@ def pathLength(cities: list[list[float]], path: list[Int32]) -> float:
 
 # Boosts pheromones for cities on path.
 # Matrix * Path * int -> unit
-def updatePher(pher: list[list[float]], path: list[Int32], boost: Int32) -> None:
+def updatePher(pher: list[list[float]], path: list[int32], boost: int32) -> None:
     pairs = list(zip(path, wrappedPath(path)))
     for (r,c) in pairs:
         pher[r][c] = pher[r][c] + boost
 
 # Matrix * int * int -> unit
-def evaporatePher(pher: list[list[float]], maxIter: Int32, boost: Int32) -> None:
+def evaporatePher(pher: list[list[float]], maxIter: int32, boost: int32) -> None:
     decr = boost / float(maxIter)
     for r in range(len(pher)):
         for c in range(len(pher[r])):
@@ -98,7 +98,7 @@ def evaporatePher(pher: list[list[float]], maxIter: Int32, boost: Int32) -> None
 # Sum weights for all paths to cities adjacent to current.
 # Matrix * Matrix * CitySet * int -> double
 def doSumWeight(cities: list[list[float]], pher: list[list[float]],
-                used: dict[Int32, Int32], current: Int32) -> float:
+                used: dict[int32, int32], current: int32) -> float:
     runningTotal = 0.0
     for city in range(len(cities)):
         if city not in used:
@@ -109,7 +109,7 @@ def doSumWeight(cities: list[list[float]], pher: list[list[float]],
 # Returns city at soughtTotal.
 # Matrix * Matrix * CitySet * int * double -> int
 def findSumWeight(cities: list[list[float]], pher: list[list[float]],
-                  used: dict[Int32, Int32], current: Int32, soughtTotal: float) -> Int32:
+                  used: dict[int32, int32], current: int32, soughtTotal: float) -> int32:
     runningTotal = 0.0
     next = 0
     for city in range(len(cities)):
@@ -122,7 +122,7 @@ def findSumWeight(cities: list[list[float]], pher: list[list[float]],
     return next
 
 # Matrix * Matrix -> Path
-def genPath(cities: list[list[float]], pher: list[list[float]]) -> Own[list[Int32]]:
+def genPath(cities: list[list[float]], pher: list[list[float]]) -> Own[list[int32]]:
     current = random.randint(0, len(cities)-1)
     path = [current]
     used = {current:1}
@@ -135,12 +135,12 @@ def genPath(cities: list[list[float]], pher: list[list[float]]) -> Own[list[Int3
     return path
 
 # Matrix * int * int * int ->Path
-def bestPath(cities: list[list[float]], seed: Int32, maxIter: Int32,
-             boost: Int32) -> Own[list[Int32]]:
+def bestPath(cities: list[list[float]], seed: int32, maxIter: int32,
+             boost: int32) -> Own[list[int32]]:
     pher = randomMatrix(len(cities), 0, 0)
     random.seed(seed)
     bestLen = 0.0
-    bestPath: list[Int32] = []
+    bestPath: list[int32] = []
     for iter in range(maxIter):
         path = genPath(cities, pher)
         pathLen = pathLength(cities, path)

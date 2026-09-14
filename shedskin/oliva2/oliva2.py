@@ -23,20 +23,20 @@ This program requires Python and ShedSkin (http://shedskin.sourceforge.net).
 from random import random, randint, seed
 import time
 
-from tpy import Int32, Own
+from tpy import int32, Own
 
 
 class SavePGMlines:
     """SavePGMlines(matrix, filename): class, saves a PGM, 256 greys for each pixel, line by line.
     Values can be int or float in [0, 255]."""
-    ny: Int32
-    nx: Int32
-    written_lines_count: Int32
+    ny: int32
+    nx: int32
+    written_lines_count: int32
 
     # The original stores the open file in a field. TurboPython rejects
     # assigning an open() result to a TextIO field, so the handle is owned by
     # the caller and passed in to each saverow() call instead.
-    def __init__(self, ny: Int32) -> None:
+    def __init__(self, ny: int32) -> None:
         self.ny = ny
         self.nx = 0 # Unknown
         self.written_lines_count = 0 # lines written count
@@ -73,9 +73,9 @@ class SavePGMlines:
 
 
 
-def oliva(nx: Int32 = 640,   # Length of the computed screen matrix (number of cells)
-          ny: Int32 = 480,   # Height of the computed screen matrix
-          kp: Int32 = 12,    # number of iterations between the displays ( = lines on the screen)
+def oliva(nx: int32 = 640,   # Length of the computed screen matrix (number of cells)
+          ny: int32 = 480,   # Height of the computed screen matrix
+          kp: int32 = 12,    # number of iterations between the displays ( = lines on the screen)
           da: float = 0.015, # Diffusion of the activator
           ra: float = 0.1,   # Decay rate of the inhibitor
           ba: float = 0.1,   # Basic production of the activator

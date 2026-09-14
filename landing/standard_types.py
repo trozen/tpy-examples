@@ -1,7 +1,7 @@
 # Built-in types and idioms. An unannotated integer
-# literal is Int32; `int` is arbitrary-precision.
+# literal is int32; `int` is arbitrary-precision.
 def main() -> None:
-    n = 6 * 7              # Int32 (default integer type)
+    n = 6 * 7              # int32 (default integer type)
     big: int = 2 ** 40     # int -> arbitrary precision int
     ratio = 22 / 7         # float
     ok = n > 40            # bool

@@ -29,18 +29,23 @@ Skin counterpart — starting with CPython extension modules written in TurboPyt
 
 - Linux or macOS
 - Python 3.12+
-- `tpy-lang` 0.5.1 — the version these examples target
+- `tpy-lang` 0.6.0.dev0 — a pre-release; these examples target commit
+  `31a87a5651` of the tpy-lang repository, checked out as the `.verify/tpy`
+  submodule
 - A C++23 compiler: g++ 13+ or clang++ 19+ — or none, if you use the bundled zig
   toolchain below
 
+The pre-release is not on PyPI, so install it from the submodule:
+
 ```bash
-pip install "tpy-lang==0.5.1"          # or: uv tool install "tpy-lang==0.5.1"
+git submodule update --init .verify/tpy
+pip install .verify/tpy                # or: uv tool install .verify/tpy
 ```
 
 If you don't have a suitable C++ compiler, install the bundled zig toolchain instead:
 
 ```bash
-pip install "tpy-lang[bundled]==0.5.1" # or: uv tool install "tpy-lang[bundled]==0.5.1"
+pip install ".verify/tpy[bundled]"     # or: uv tool install ".verify/tpy[bundled]"
 ```
 
 See [tpy-lang.org](https://tpy-lang.org) for full installation instructions and the
@@ -54,7 +59,7 @@ data files it reads:
 ```bash
 git clone https://github.com/trozen/tpy-examples
 cd tpy-examples/shedskin/<example-name>
-tpy -O <example-name>.py
+tpy <example-name>.py
 ```
 
 `tpy` compiles the program to a native binary and runs it. The entry point is always
@@ -62,13 +67,10 @@ tpy -O <example-name>.py
 programs in [`landing/`](landing/README.md) are single files rather than
 directories, run the same way from inside `landing/`.
 
-Use `-O` to see what TurboPython actually does — it is roughly 3x faster than the
-default unoptimized build, which exists for quick edit-run cycles.
-
-Useful flags:
+The build is optimized by default. Useful flags:
 
 ```bash
-tpy <example-name>.py             # unoptimized: builds faster, runs slower
+tpy --debug <example-name>.py     # unoptimized, with debug info: builds faster
 tpy --dump-code <example-name>.py # inspect the generated C++
 ```
 
@@ -76,7 +78,7 @@ tpy --dump-code <example-name>.py # inspect the generated C++
 
 Sources stay valid Python, so your editor and type checker still understand them.
 But a ported example is not a drop-in CPython script: it imports TurboPython types
-such as `Int32`, and a few bind native libraries directly, which has no CPython
+such as `int32`, and a few bind native libraries directly, which has no CPython
 equivalent.
 
 Both running an example under CPython and resolving its imports for a type checker
