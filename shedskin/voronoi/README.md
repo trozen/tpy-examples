@@ -28,10 +28,15 @@ The original states no license.
   from at the point it is written.
 - `str(...)` around `chars[...]` — indexing a `str` yields a `char` in TurboPython,
   and `"".join()` takes an iterable of `str`.
-- `print('TIME %.2f' % (time.time()-t0))` became an f-string. TurboPython has no
-  printf-style `%` formatting on `str`.
+- The closing `TIME` line became an f-string — see below.
 
 The algorithm, loop structure, benchmark harness and output are the original's.
+
+## TurboPython bugs worked around
+
+- **No printf-style `%` formatting on `str`.** `print('TIME %.2f' %
+  (time.time()-t0))` became an f-string. Tracked in tpy-lang's `TODO.md`
+  ("printf-style `%` formatting on `str`").
 
 ## Notes
 

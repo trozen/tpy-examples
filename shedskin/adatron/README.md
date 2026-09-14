@@ -1,7 +1,7 @@
 # adatron
 
 An Adatron support vector machine with a polynomial kernel, classifying proteins by
-subcellular location. ~204 lines.
+subcellular location. ~203 lines.
 
 ## Origin
 
@@ -35,18 +35,8 @@ This port needed more than the others in this directory. Every change is listed.
   declaration precedes `class Protein`, so an unquoted form raises `NameError`
   under CPython while compiling fine under TurboPython.
 
-**Working around missing language and library features:**
+**Substitutions the type system asks for:**
 
-- `for line in protfile:` became `for line in protfile.readlines():` — file objects
-  are not iterable yet.
-- `name, mass, ... = line.strip().split("\t")` became an indexed tuple. Unpacking
-  is supported for tuples, not lists, and `split()` returns a list.
-- `sorted(self.local_composition.items())` became `sorted(...keys())` with the value
-  looked up in the body — tuples do not satisfy `Comparable`. The next loop in the
-  original already uses `sorted(...keys())`, so this matches the file's own idiom,
-  and `value` still leaks into that loop exactly as it did before.
-- `max(current_predictions)` became `sorted(current_predictions)[-1]` — `max()` has
-  only two- and three-argument scalar overloads; there is no iterable form.
 - `PROTEINS = []` in `main()` became `PROTEINS.clear()`. Rebinding a non-value-type
   global is rejected; clearing in place is the equivalent.
 - `train_adatron` and `calculate_error` gained terminal `return` statements.
@@ -55,12 +45,29 @@ This port needed more than the others in this directory. Every change is listed.
 - `str(...)` around `AMINOACIDS` and `sequence` element access — indexing a `str`
   yields a `char`, and the composition dictionaries are keyed by `str` so their keys
   can be sorted (`char` does not satisfy `Comparable`).
-- `print("Starting iteration %s..." % iteration)` and the closing `TIME` line became
-  f-strings; there is no printf-style `%` formatting on `str`.
 
 The algorithm, control flow, data files and output are the original's — including
 the quirk in `create_vector` where the second loop appends the stale `value` from
 the first, which is reproduced rather than fixed.
+
+## TurboPython bugs worked around
+
+Each of these is a piece of Python the compiler does not accept yet. Revert once
+it does.
+
+- **File objects are not iterable.** `for line in protfile:` became
+  `for line in protfile.readlines():`, which reads the whole file at once.
+  Tracked in tpy-lang's `TODO.md` ("Iterating a file object").
+- **Unpacking a list is rejected.** `name, mass, ... = line.strip().split("\t")`
+  became an indexed tuple: unpacking works for tuples, and `split()` returns a
+  list (`Cannot unpack non-tuple type Own[list[str]]`). Not filed upstream yet.
+- **`max()` has no single-iterable form.** `max(current_predictions)` became
+  `sorted(current_predictions)[-1]`; only the two- and three-argument scalar
+  overloads exist. Tracked in tpy-lang's `TODO.md` ("`min(iterable)` /
+  `max(iterable)` single-iterable form").
+- **No printf-style `%` formatting on `str`.** `print("Starting iteration %s..." %
+  iteration)` and the closing `TIME` line became f-strings. Tracked in tpy-lang's
+  `TODO.md` ("printf-style `%` formatting on `str`").
 
 ## Notes
 

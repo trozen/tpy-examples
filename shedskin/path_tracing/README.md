@@ -125,17 +125,11 @@ channel of every pixel.
 
 **Smaller substitutions.**
 
-- `float("inf")` → `math.inf`.
-- `%`-formatting → f-strings; TurboPython has no printf-style `%` operator.
-- `class V3(object)` → `class V3`; `object` is not a base class here.
 - `super(Chrome, self).__init__(...)` → `super().__init__(...)`; only the
   Python 3 zero-argument form is accepted.
-- `v2` and `v2_dot` in `getRandomNormalInHemisphere` are initialised before
-  the `while True` loop that assigns them — locals are function-scoped and
-  must be definitely assigned.
 - The driver loop at module scope moved into an `if __name__ == '__main__':`
-  block, with `t0` initialised before the loop that conditionally reassigns
-  it.
+  block, with `t0` initialised before the loop. The original assigns it only
+  at `n == 5`, which the compiler cannot prove is always reached.
 - `ITERATIONS` gained a `Final[int32]` annotation.
 
 **Added: a sample count on the command line.** `main()` takes its sample
@@ -156,8 +150,23 @@ source.
   `V3(random() * 2.0 - 1.0, random() * 2.0 - 1.0, random() * 2.0 - 1.0)`
   consumed three draws backwards and every pixel came out different. The three
   draws are hoisted into separate statements in
-  `getRandomNormalInHemisphere`; fold them back into the call once the
-  compiler sequences arguments left-to-right.
+  `getRandomNormalInHemisphere`. Tracked in tpy-lang's `BUGS.md`
+  ("Subexpressions evaluate RIGHT-TO-LEFT"); fold them back into the call once
+  the compiler sequences arguments left-to-right.
+
+- **Definite assignment does not see through `while True`.** `v2` and
+  `v2_dot` in `getRandomNormalInHemisphere` are initialised before the
+  `while True` loop, whose only exit is a `break` after both are assigned;
+  without the initialisers the compiler reports the variable "may not be
+  assigned" at the use after the loop. Not filed upstream yet; drop the
+  initialisers once fixed.
+
+- **No printf-style `%` formatting on `str`.** The `TIME` lines became
+  f-strings. Tracked in tpy-lang's `TODO.md` ("printf-style `%` formatting
+  on `str`").
+
+- **`class V3(object)` is rejected** with `Unknown type: object`, so it is
+  `class V3`. Not filed upstream yet.
 
 ## Verification
 

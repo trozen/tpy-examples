@@ -35,7 +35,7 @@ Examples are added in small batches, and appear here only once they fully work.
 
 | | example | description | lines |
 | --- | ------- | ----------- | ----- |
-| | [adatron](adatron/) | Adatron SVM with a polynomial kernel | 204 |
+| | [adatron](adatron/) | Adatron SVM with a polynomial kernel | 203 |
 | | [ant](ant/) | Ant Colony Optimization for the Travelling Salesman Problem | 175 |
 | <img src="doom/doom.png" height="90"> | [doom](doom/) | DOOM WAD renderer, drawn with SDL2 | 1496 |
 | <img src="mandelbrot/mandelbrot.png" height="90"> | [mandelbrot](mandelbrot/) | The Mandelbrot set rendered as ASCII art | 43 |
@@ -80,8 +80,10 @@ Specifically, each example's README documents:
 - **Origin** — the upstream path, author, and license notice, verbatim from the
   source.
 - **Changes from the original** — every deviation, including annotations added.
-- **TurboPython bugs worked around** — with a link to the upstream issue, if any.
-  These are meant to be temporary; when the compiler is fixed, the workaround goes.
+- **TurboPython bugs worked around** — everything that stopped the port from using
+  a feature the original uses, whether a compiler bug or a missing piece of Python,
+  with a pointer to the upstream entry if one exists. These are meant to be
+  temporary; when the compiler is fixed, the workaround goes.
 
 Every port is checked against its original. Usually the **unmodified original** is
 run under CPython, the port under TurboPython, and the two outputs must be

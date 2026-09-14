@@ -35,17 +35,7 @@ viewer will open it; `pnmtopng oliva.pgm > oliva.png` converts it.
 
 ## Changes from the original
 
-**The file handle moved out of the class.** The original keeps the open file in a
-field (`self.out_file`) and writes to it from `saverow()`. In TurboPython a `TextIO`
-is usable only as a *local*: assigning an `open()` result to a `TextIO` field is
-rejected, and taking one as a parameter yields a `Ref[TextIO]` that neither
-satisfies the `Writable` protocol nor allows `.write()`. So `saverow()` now returns
-the text to write and `oliva()`, which owns the handle, does the writing. The class
-keeps all its bookkeeping — row count, width, the header-on-first-row logic and both
-asserts — unchanged.
-
-That also replaces the four `print(..., file=...)` header calls with string
-building, and moves the final `close()` to the caller.
+**The file handle moved out of the class** — see below.
 
 **Annotations:** signatures on both methods and on `oliva()`'s twelve parameters,
 class-level field declarations (TurboPython stores fields inline and has no
@@ -54,6 +44,21 @@ class-level field declarations (TurboPython stores fields inline and has no
 
 The model itself — the reaction–diffusion loop, its constants, the boundary
 handling and the output format — is untouched.
+
+## TurboPython bugs worked around
+
+- **A `TextIO` cannot be stored in a field.** The original keeps the open file
+  in a field (`self.out_file`) and writes to it from `saverow()`. Assigning an
+  `open()` result to a `TextIO` field passes the type checker but fails in the
+  generated C++ (`use of deleted function 'tpy::TextFile::TextFile(const
+  tpy::TextFile&)'`: the field is initialised by copy, and the file type is
+  not copyable). So `saverow()` now returns the text to write and `oliva()`,
+  which owns the handle, does the writing. That also replaces the four
+  `print(..., file=...)` header calls with string building and moves the
+  final `close()` to the caller. The class keeps all its bookkeeping — row
+  count, width, the header-on-first-row logic and both asserts — unchanged.
+  A `TextIO` *parameter* works; only the field form fails. Not filed upstream
+  yet; move the handle back into the class once fixed.
 
 ## Notes
 

@@ -33,17 +33,15 @@ class SavePGMlines:
     nx: int32
     written_lines_count: int32
 
-    # The original stores the open file in a field. TurboPython rejects
-    # assigning an open() result to a TextIO field, so the handle is owned by
-    # the caller and passed in to each saverow() call instead.
+    # The original stores the open file in a field. Storing a TextIO in a
+    # field does not build (see the README), so the caller keeps the handle.
     def __init__(self, ny: int32) -> None:
         self.ny = ny
         self.nx = 0 # Unknown
         self.written_lines_count = 0 # lines written count
 
-    # Returns the text to write rather than writing it. A TextIO is usable
-    # only as a local in TurboPython -- it cannot be stored in a field or taken
-    # as a parameter -- so the caller owns the handle and does the writing.
+    # Returns the text to write rather than writing it: the caller owns the
+    # handle and does the writing.
     def saverow(self, row: list[float]) -> Own[str]:
         out = ""
         if self.written_lines_count:

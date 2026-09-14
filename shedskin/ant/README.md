@@ -31,10 +31,6 @@ The original states no license.
   TurboPython containers own what they store, so appending first would store an
   empty row. Filling first is equivalent under both runtimes.
 
-- **`wrappedPath` builds the rotated list directly** instead of `path[1:] +
-  [path[0]]`. A slice is a non-owning `Span` in TurboPython and cannot be
-  concatenated.
-
 - **`bestPath = copy(path)`** rather than a bare assignment. The loop rebinds
   `path` on the next iteration, so the best-so-far needs its own storage;
   TurboPython requires that to be explicit. CPython aliases here, to the same
@@ -60,7 +56,14 @@ The original states no license.
   differed, including completely different tours. Writing the compensated sum out
   by hand restores exact agreement.
 
+  Tracked in tpy-lang's `BUGS.md` ("`sum()` over floats accumulates naively").
   Revert to `sum()` once TurboPython's matches CPython.
+
+- **A slice cannot be concatenated.** `wrappedPath` builds the rotated list
+  directly instead of `path[1:] + [path[0]]`: a slice is a non-owning `Span`,
+  and there is no `+` between a `Span` and a list (`Invalid operand types for
+  '+': Span[int32] and PendingList[int32, 1]`). Not filed upstream yet; restore
+  the expression once there is one.
 
 ## Notes
 

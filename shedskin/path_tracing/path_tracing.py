@@ -1,5 +1,5 @@
 from random import random, seed
-from math import sqrt, inf
+from math import sqrt
 import sys
 import time
 from typing import Final, Protocol
@@ -280,7 +280,7 @@ class Renderer:
             y += ystep
 
     def trace(self, ray: Ray, n: int32) -> Own[V3]:
-        mint = inf
+        mint = float("inf")
 
         # trace no more than 5 bounces
         if n > 4:

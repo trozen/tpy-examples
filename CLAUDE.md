@@ -177,9 +177,14 @@ the other modules' names alone.
 **Keep timing scaffolding.** Most originals print elapsed time; leave it in and
 normalize it away when comparing output. Do not delete it.
 
-**Workarounds are temporary and must be labelled.** If a TurboPython bug forces a
-deviation, say so in the example's README with a link to the upstream issue, so it
-can be reverted when the compiler is fixed.
+**Workarounds are temporary and must be labelled.** If a TurboPython bug, or a
+missing piece of Python, forces a deviation, list it under **TurboPython bugs
+worked around** in the example's README, so it can be reverted when the compiler
+is fixed. That section is for anything that stopped the port from using a feature
+the original uses; genuine TurboPython idioms (ownership, annotations, `int32`)
+stay under **Changes from the original**. Point at the upstream issue if there is
+one; tpy-lang tracks bugs in its `BUGS.md` and gaps in its `TODO.md`, so name the
+entry there, or say "not filed upstream yet".
 
 **Never put speedup or benchmark numbers in a README.** The rationale, and the plan
 for lifting this, are in `TODO.md`.
@@ -208,7 +213,9 @@ Attribution and license, verbatim from the source header:
 
 ## TurboPython bugs worked around
 
-- <deviation> — <upstream issue link>, revert once fixed.
+- **<what could not be used>** — <how the port works around it>. <Tracked in
+  tpy-lang's `BUGS.md`/`TODO.md` ("<entry title>") | Not filed upstream yet>;
+  revert once fixed.
 
 (Omit this section if there were none.)
 ```

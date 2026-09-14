@@ -21,9 +21,8 @@ The original states no license.
 ## Changes from the original
 
 - Annotated `mandelbrot()` — `max_iterations: int32 = 1000`, returning `None`.
-- `print('TIME %.2f' % (time.time()-t0))` became an f-string. TurboPython has no
-  printf-style `%` formatting on `str`.
-- `zi` and `zr` are initialised to `0.0` instead of `0` — see below.
+- `zi` and `zr` are initialised to `0.0` instead of `0`, and the `TIME` line is
+  an f-string — see below.
 
 Nothing else changed: the algorithm, the loop structure, the benchmark harness and
 the output are the original's.
@@ -46,7 +45,11 @@ the output are the original's.
       z = z + 1.5
   ```
 
-  Restore the original `0` once this is fixed.
+  Not filed upstream yet. Restore the original `0` once this is fixed.
+
+- **No printf-style `%` formatting on `str`.** `print('TIME %.2f' %
+  (time.time()-t0))` became an f-string. Tracked in tpy-lang's `TODO.md`
+  ("printf-style `%` formatting on `str`").
 
 ## Notes
 

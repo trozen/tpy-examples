@@ -52,8 +52,7 @@ class Protein:
 
     def create_vector(self) -> Own[list[float]]:
         vector = []
-        for key in sorted(self.local_composition.keys()):
-            value = self.local_composition[key]
+        for key, value in sorted(self.local_composition.items()):
             vector.append(value)
         for key in sorted(self.global_composition.keys()):
             vector.append(value)

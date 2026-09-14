@@ -74,10 +74,6 @@ each unpacked field is widened where it is read.
 **Owned copies of `bytes` slices.** Slicing `bytes` yields a non-owning view, so
 anything stored in the entry table or used as a dict key takes an owned copy.
 
-**Class order.** `Flat`, `Picture` and `Vec2` were moved above the classes that
-store them by value: generated classes appear in source order with no forward
-declarations, so a by-value field of a later class does not compile.
-
 **Two hot loops were hand-optimised**, both in the floor/ceiling span drawer,
 which is the large majority of a frame:
 
@@ -90,9 +86,8 @@ which is the large majority of a frame:
 
 **Structure.** `doom_main.py` became `doom.py` (the entry point must match the
 directory) and the engine became `engine.py`. The nested `move_player` closure
-became a plain function taking and returning the velocities. `WIDTH`/`HEIGHT`
-carry annotations because an unannotated module-level variable is not exported,
-and `Final` where they are genuinely constant.
+became a plain function taking and returning the velocities. `WIDTH` and
+`HEIGHT` are `Final`, since they are genuinely constant.
 
 **Stated invariants.** Three places dereference a value the compiler sees as
 nullable but that the WAD guarantees: a `PNAMES` patch referenced by a texture,
@@ -118,6 +113,23 @@ link. The API is flat rather than pygame's nested one. Music is dropped.
 engine, which rendered one frame as a smoke test. Shed Skin builds the engine as
 an extension module, so that block was its standalone entry point; here the
 engine is only ever imported.
+
+## TurboPython bugs worked around
+
+- **An unannotated module-level variable cannot be imported.** With a bare
+  `WIDTH = 800` in `engine.py`, `from engine import WIDTH` fails with `'WIDTH'
+  not found in module 'engine'`; an annotation makes it importable. That is
+  why `WIDTH` and `HEIGHT` carry one. The language reference lists variables
+  among the names an import resolves, with no annotation requirement, so this
+  is a compiler defect rather than a rule. Not filed upstream yet; drop the
+  annotations once fixed.
+- **A by-value field of a class declared later does not compile.** `Flat`,
+  `Picture` and `Vec2` were moved above the classes that store them by value.
+  The generated C++ declares classes in source order with only a forward
+  declaration, and a by-value member of an incomplete type is a C++ error
+  (`field 'b' has incomplete type`) that the compiler lets through to the C++
+  build instead of reporting or reordering. Not filed upstream yet; restore
+  the original class order once fixed.
 
 ## Notes
 
