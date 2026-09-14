@@ -1,0 +1,12 @@
+Box(42)
+after set: Box(100)
+original: Box(100)
+clone: Box(999)
+taken: 999
+Box(hello)
+Box(Tag('hello'))
+Box(Point(x=3, y=4))
+taken point: 3 4
+temp: 77
+area: 78.5
+area: 16.0

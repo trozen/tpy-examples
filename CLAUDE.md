@@ -1,8 +1,9 @@
 # tpy-examples
 
 A curated gallery of example programs for [TurboPython](https://tpy-lang.org),
-linked from the project website. The current work is porting programs from the
-Shed Skin examples collection into `shedskin/`.
+linked from the project website. Most of the work is porting programs from the
+Shed Skin examples collection into `shedskin/`; the other categories hold programs
+written here.
 
 This is a **showcase**, not a test suite. tpy-lang has its own test suite; nothing
 here exists to exercise the compiler. Everything published here works.
@@ -133,9 +134,28 @@ files appear, in what order, under what label is decided by `ORDER` in that
 repository's `build_examples.py` — adding a file here does not put it on the
 page. See `landing/README.md`.
 
+## The original categories: `basics/`, `tplib/`, `programs/`
+
+Programs written for this repository rather than ported. They are verified by the
+fallback route in step 4 (the port itself under CPython with the stubs), except
+where a program has no CPython counterpart — a `tplib`-only API, a server that
+needs a peer — in which case the README says how it was checked instead.
+
+- `basics/` — single files, no arguments, no data files, no website line limit.
+  Plain Python plus the annotations TurboPython needs, nothing clever.
+- `tplib/` — single files, one type or module each, with the expected result in a
+  comment next to each print. Client/server pairs are `build_only` in the harness.
+- `programs/` — applications, laid out like `shedskin/`: `<name>/<name>.py` plus a
+  README with **Run**, **What it shows** and **Verification** sections. The
+  "TurboPython bugs worked around" section applies here too.
+
+New files in `basics/` and `tplib/` go in the category's README table.
+
 ## Hard rules
 
-The rules in this section govern `shedskin/`; `landing/` is covered above.
+The rules in this section govern `shedskin/`; the other categories are covered
+above, and the rules on publishing only working examples, on labelling workarounds
+and on never putting benchmark numbers in a README apply everywhere.
 
 **Fidelity where it doesn't hurt.** Prefer the original wording when the cost is an
 annotation or a small equivalent substitution — that is the common case, and it is

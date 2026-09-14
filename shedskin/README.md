@@ -41,6 +41,7 @@ Examples are added in small batches, and appear here only once they fully work.
 | <img src="mandelbrot/mandelbrot.png" height="90"> | [mandelbrot](mandelbrot/) | The Mandelbrot set rendered as ASCII art | 43 |
 | <img src="oliva2/oliva2.png" height="90"> | [oliva2](oliva2/) | Sea-shell pigmentation patterns, written as a PGM image | 159 |
 | <img src="path_tracing/path_tracing.png" height="90"> | [path_tracing](path_tracing/) | Monte Carlo path tracer, written as a PPM image | 409 |
+| | [sieve](sieve/) | Two prime sieves, Atkin's and Eratosthenes' | 120 |
 | <img src="voronoi/voronoi.png" height="90"> | [voronoi](voronoi/) | A Voronoi diagram rendered as ASCII art | 59 |
 
 ---

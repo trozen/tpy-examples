@@ -55,7 +55,7 @@ def test_build(example: Example, build_root):
 
 def test_run(example: Example, build_root, bless):
     if example.build_only:
-        pytest.skip(f"build only: {example.build_only}")
+        pytest.skip(f"{example.id}: build only: {example.build_only}")
     for name in example.output_files:
         (example.cwd / name).unlink(missing_ok=True)
 

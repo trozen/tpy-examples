@@ -32,9 +32,22 @@ EXPECTED_DIR = VERIFY_DIR / "expected"
 #                 null and `make bless` fills it in.
 CONFIG_KEYS = {"build_only", "output_files"}
 
-# The originals print their elapsed time; that is the one line that may differ
-# between runs (see CLAUDE.md, "Keep timing scaffolding").
-_TIME_LINE = re.compile(r"^TIME \d+\.\d+$", re.MULTILINE)
+# The programs print their elapsed time; that is the one line that may differ
+# between runs (see CLAUDE.md, "Keep timing scaffolding"). Most spell it
+# `TIME 1.23`, the sieve also prints a `time: 1.23` per run, and basics/mandelbrot
+# prints unrounded milliseconds.
+_TIME_LINE = re.compile(r"^(TIME|time:|elapsed\[ms\]:) [0-9.e+-]+$", re.MULTILINE)
+
+# Where the examples live, and how each category is laid out: "dirs" is one
+# directory per example with the entry point at <name>/<name>.py, "files" is
+# one file per example (see the README of each category).
+CATEGORIES = {
+    "shedskin": "dirs",
+    "programs": "dirs",
+    "landing": "files",
+    "basics": "files",
+    "tplib": "files",
+}
 
 
 @dataclass(frozen=True)
@@ -86,12 +99,18 @@ def _load(id: str, source: Path) -> Example:
 
 def discover() -> list[Example]:
     found = []
-    for d in sorted((REPO_ROOT / "shedskin").iterdir()):
-        entry = d / f"{d.name}.py"
-        if entry.exists():
-            found.append(_load(f"shedskin/{d.name}", entry))
-    for f in sorted((REPO_ROOT / "landing").glob("*.py")):
-        found.append(_load(f"landing/{f.stem}", f))
+    for category, layout in CATEGORIES.items():
+        root = REPO_ROOT / category
+        if not root.is_dir():
+            continue
+        if layout == "dirs":
+            for d in sorted(root.iterdir()):
+                entry = d / f"{d.name}.py"
+                if entry.exists():
+                    found.append(_load(f"{category}/{d.name}", entry))
+        else:
+            for f in sorted(root.glob("*.py")):
+                found.append(_load(f"{category}/{f.stem}", f))
     return found
 
 
@@ -99,7 +118,7 @@ EXAMPLES = discover()
 
 
 def normalize(stdout: str) -> str:
-    return _TIME_LINE.sub("TIME <elapsed>", stdout)
+    return _TIME_LINE.sub(r"\1 <elapsed>", stdout)
 
 
 def tpy(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -134,7 +153,7 @@ def pytest_configure(config):
             "-- run the tests through `make test` or `uv run pytest` in .verify/"
         )
     if not EXAMPLES:
-        raise pytest.UsageError("no examples found under shedskin/ or landing/")
+        raise pytest.UsageError(f"no examples found under {', '.join(CATEGORIES)}")
 
 
 @pytest.fixture(scope="session", params=EXAMPLES, ids=[e.id for e in EXAMPLES])

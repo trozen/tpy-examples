@@ -5,8 +5,9 @@ builds and runs against the compiler version the gallery says it targets.
 
 - `tpy/` — the compiler, as a git submodule pinned to that version. The
   submodule commit *is* the pin; `pyproject.toml` installs it into `.venv/`.
-- `test_examples.py` — builds every example under `shedskin/` and `landing/`
-  with `tpy`, runs all but the few that need a display or the network, and
+- `test_examples.py` — builds every example in every category (the list is
+  `CATEGORIES` in `conftest.py`) with `tpy`, runs all but the few that need a
+  display, the network or a peer process, and
   compares stdout (elapsed-time lines normalised) and any written files with
   `expected/`.
 - `test_version.py` — the pinned version must match what `README.md` and
