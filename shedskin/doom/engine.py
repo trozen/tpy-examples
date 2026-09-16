@@ -7,8 +7,6 @@ from typing import Final
 from tpy import int32, Own, Ptr, uint8, readonly
 from tplib import Box
 
-# Annotated so they can be imported: an unannotated module-level variable is
-# not exported by TurboPython.
 WIDTH: Final[int32] = 800
 HEIGHT: Final[int32] = 600
 

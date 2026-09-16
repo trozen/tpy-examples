@@ -67,8 +67,6 @@ def getRandomNormalInHemisphere(v: V3) -> Own[V3]:
     outside of the unit sphere. Now I've got a random normal vector.
     The last step is to mirror the poif it is in the wrong hemisphere.
     """
-    v2 = V3(0.0, 0.0, 0.0)
-    v2_dot = 0.0
     while True:
         # The three draws are hoisted out of the V3(...) call because
         # TurboPython evaluates call arguments right-to-left; inline, they

@@ -116,13 +116,6 @@ engine is only ever imported.
 
 ## TurboPython bugs worked around
 
-- **An unannotated module-level variable cannot be imported.** With a bare
-  `WIDTH = 800` in `engine.py`, `from engine import WIDTH` fails with `'WIDTH'
-  not found in module 'engine'`; an annotation makes it importable. That is
-  why `WIDTH` and `HEIGHT` carry one. The language reference lists variables
-  among the names an import resolves, with no annotation requirement, so this
-  is a compiler defect rather than a rule. Not filed upstream yet; drop the
-  annotations once fixed.
 - **A by-value field of a class declared later does not compile.** `Flat`,
   `Picture` and `Vec2` were moved above the classes that store them by value.
   The generated C++ declares classes in source order with only a forward

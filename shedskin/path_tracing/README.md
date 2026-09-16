@@ -154,19 +154,13 @@ source.
   ("Subexpressions evaluate RIGHT-TO-LEFT"); fold them back into the call once
   the compiler sequences arguments left-to-right.
 
-- **Definite assignment does not see through `while True`.** `v2` and
-  `v2_dot` in `getRandomNormalInHemisphere` are initialised before the
-  `while True` loop, whose only exit is a `break` after both are assigned;
-  without the initialisers the compiler reports the variable "may not be
-  assigned" at the use after the loop. Not filed upstream yet; drop the
-  initialisers once fixed.
-
 - **No printf-style `%` formatting on `str`.** The `TIME` lines became
   f-strings. Tracked in tpy-lang's `TODO.md` ("printf-style `%` formatting
   on `str`").
 
 - **`class V3(object)` is rejected** with `Unknown type: object`, so it is
-  `class V3`. Not filed upstream yet.
+  `class V3`. Tracked in tpy-lang's `TODO.md` ("`object` and `type` as
+  annotation types").
 
 ## Verification
 

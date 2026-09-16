@@ -30,7 +30,7 @@ When writing or modifying `.py` files compiled by tpy:
 tpy --install-agent-docs docs/
 ```
 
-Examples target **tpy-lang 0.6.0.dev0**, a pre-release at commit `31a87a5651`.
+Examples target **tpy-lang 0.6.0.dev0**, a pre-release at commit `afd815b028`.
 That commit is pinned as the `.verify/tpy` submodule. When it changes, move the
 submodule to the new commit and update the version and commit here and in
 `README.md` — the Requirements bullet and, on a release, both `pip install`
