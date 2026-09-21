@@ -32,9 +32,8 @@ listed in [TODO.md](TODO.md).
 
 - Linux or macOS
 - Python 3.12+
-- `tpy-lang` 0.6.0.dev0 — a pre-release; these examples target commit
-  `afd815b028` of the tpy-lang repository, checked out as the `.verify/tpy`
-  submodule
+- `tpy-lang` 0.6.0.dev0 — a pre-release; these examples target the
+  tpy-lang commit pinned as the `.verify/tpy` submodule
 - A C++23 compiler: g++ 13+ or clang++ 19+ — or none, if you use the bundled zig
   toolchain below
 
