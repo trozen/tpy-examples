@@ -114,6 +114,7 @@ def main():
 
 
 if __name__ == "__main__":
+    t0 = 0
     for n in range(10):
         if n == 5:
             t0 = time.time()  # pypy has stabilized

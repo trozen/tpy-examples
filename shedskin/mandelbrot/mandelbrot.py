@@ -34,6 +34,7 @@ def mandelbrot(max_iterations: int32 = 1000) -> None:
                     break
         print(''.join(line))
 
+t0 = 0
 for x in range(10):
     if x == 5:
         t0 = time.time()  # pypy has stabilized

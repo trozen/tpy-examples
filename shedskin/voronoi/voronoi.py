@@ -48,6 +48,7 @@ def generateScreen(points: list[tuple[float, float]], rows: int32 = 40, cols: in
 
 
 if __name__ == '__main__':
+    t0 = 0
     for m in range(10):
         if m == 5:
             t0 = time.time()

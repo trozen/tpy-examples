@@ -52,6 +52,12 @@ class Protein:
 
     def create_vector(self) -> Own[list[float]]:
         vector = []
+        # BUG: the second loop appends the last local-composition value once per
+        # global key instead of self.global_composition[key]. That is how the
+        # original is written, and it is kept so the output matches it; the
+        # initializer only gives `value` a binding on every path, since TPy
+        # cannot prove the first loop runs.
+        value = 0.0
         for key, value in sorted(self.local_composition.items()):
             vector.append(value)
         for key in sorted(self.global_composition.keys()):
@@ -196,6 +202,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    t0 = 0
     for n in range(10):
         if n == 5:
             t0 = time.time()  # pypy has stabilized

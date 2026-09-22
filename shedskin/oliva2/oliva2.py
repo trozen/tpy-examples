@@ -148,6 +148,7 @@ def oliva(nx: int32 = 640,   # Length of the computed screen matrix (number of c
     out_file.close()
 
 if __name__ == '__main__':
+    t0 = 0
     for m in range(10):
         if m == 5:
             t0 = time.time()  # pypy has stabilized

@@ -161,6 +161,7 @@ def main() -> None:
     maxDistance = 10
     cityDistanceSeed = 1
     print("starting")
+    t0 = 0
     for n in range(200):
         if n == 100:
             t0 = time.time()  # pypy has stabilized
