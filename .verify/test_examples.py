@@ -59,7 +59,7 @@ def test_run(example: Example, build_root, bless):
     for name in example.output_files:
         (example.cwd / name).unlink(missing_ok=True)
 
-    r = tpy(["-o", str(build_root / example.id), example.source.name],
+    r = tpy(["-o", str(build_root / example.id), example.source.name, *example.args],
             cwd=example.cwd)
     assert r.returncode == 0, f"exited with {r.returncode}:\n{_tail(r.stderr)}"
 

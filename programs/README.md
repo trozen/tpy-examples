@@ -8,6 +8,7 @@ what it is and how it is verified.
 | | name | description | lines |
 | - | ---- | ----------- | ----- |
 | | [curl](curl/) | a curl-like HTTP and HTTPS client on `tplib.requests` | 145 |
+| | [tte](tte/) | terminal text effects — a selection of TerminalTextEffects' effects, plus three of our own | 5535 |
 
 ## Running one
 
@@ -23,4 +24,6 @@ README says how they were checked instead.
 ## Licensing
 
 MIT, along with the rest of this repository outside `shedskin/` — see
-[LICENSE](../LICENSE).
+[LICENSE](../LICENSE). `tte` is derived from TerminalTextEffects, which is also
+MIT-licensed; its copyright and permission notice are in
+[tte/README.md](tte/README.md).

@@ -26,11 +26,13 @@ EXPECTED_DIR = VERIFY_DIR / "expected"
 # An example with no file is built and run, and its stdout compared. Keys:
 #   build_only    string -- why the example is built and linked but not run
 #                 (needs a display, hits the network, ...)
+#   args          list of command-line arguments to run the example with, for
+#                 a program whose bare run only prints its usage
 #   output_files  {file name: sha256} for files the program writes next to
 #                 itself, checked alongside stdout -- oliva2 prints only its
 #                 elapsed time, the picture is the point. Write the hash as
 #                 null and `make bless` fills it in.
-CONFIG_KEYS = {"build_only", "output_files"}
+CONFIG_KEYS = {"args", "build_only", "output_files"}
 
 # The programs print their elapsed time; that is the one line that may differ
 # between runs (see CLAUDE.md, "Keep timing scaffolding"). Most spell it
@@ -55,6 +57,7 @@ class Example:
     id: str          # "shedskin/ant", "landing/classes"
     source: Path     # the entry point
     build_only: str | None = None
+    args: list[str] = field(default_factory=list)
     output_files: dict[str, str | None] = field(default_factory=dict)
 
     @property
@@ -93,6 +96,7 @@ def _load(id: str, source: Path) -> Example:
     return Example(
         id, source,
         build_only=config.get("build_only"),
+        args=list(config.get("args", [])),
         output_files=dict(config.get("output_files", {})),
     )
 

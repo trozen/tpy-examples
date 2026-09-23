@@ -14,9 +14,11 @@ builds and runs against the compiler version the gallery says it targets.
   `CLAUDE.md` promise.
 - `expected/` — recorded outputs, one per runnable example, plus an optional
   `<example>.json` with per-example settings: `build_only` (a reason string;
-  the example is built and linked but not run) and `output_files` (files the
-  program writes, mapped to their sha256; write `null` and `make bless` fills
-  it in). See `conftest.py` for the full list.
+  the example is built and linked but not run), `args` (command-line
+  arguments to run it with, for a program whose bare run only prints its
+  usage) and `output_files` (files the program writes, mapped to their sha256;
+  write `null` and `make bless` fills it in). See `conftest.py` for the full
+  list.
 
 ## Running
 
