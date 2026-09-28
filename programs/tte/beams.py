@@ -4,7 +4,7 @@ from __future__ import annotations
 import random
 from typing import Final
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from engine import Grouping, Scene, Terminal, randint
 from graphics import Color, Direction, Gradient, adjust_brightness, hex_colors
@@ -73,11 +73,9 @@ class Beams:
 
     def build(self) -> None:
         self.wipe_groups = self.term.grouped(Grouping.DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
-        beam_stops = hex_colors(BEAM_GRADIENT_STOPS)
-        beam_gradient = Gradient(beam_stops, BEAM_GRADIENT_STEPS)
+        beam_gradient = Gradient(hex_colors(BEAM_GRADIENT_STOPS), BEAM_GRADIENT_STEPS)
         for row in self.term.grouped(Grouping.ROW_TOP_TO_BOTTOM, include_fill=True):
             self.groups.append(BeamGroup(self.term, row, "row"))
         for column in self.term.grouped(Grouping.COLUMN_LEFT_TO_RIGHT, include_fill=True):
@@ -88,7 +86,7 @@ class Beams:
             if character.is_fill:
                 final_color = Color(0, 0, 0)
             else:
-                final_color = final_colors[copy(character.input_coord)]
+                final_color = final_colors[character.input_coord]
             faded_color = adjust_brightness(final_color, 0.3)
             fade_gradient = Gradient([final_color, faded_color], [10])
             brighten_gradient = Gradient([faded_color, final_color], [10])

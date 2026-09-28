@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import out_sine
 from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
@@ -41,15 +41,14 @@ class LaserEtch:
         self.build_laser()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         spark_yellow = hex_color("ffe680")
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
             # Etched in as a hot spark, the character cools to its final color.
             cool_stops = hex_colors(COOL_GRADIENT_STOPS)
-            final_color = final_colors[copy(character.input_coord)]
+            final_color = final_colors[character.input_coord]
             cool_stops.append(final_color)
             cool_gradient = Gradient(cool_stops, [8])
             spawn = Scene("spawn")
@@ -64,10 +63,8 @@ class LaserEtch:
     def build_laser(self) -> None:
         """A diagonal beam from the bottom left, its colors cycling up it, and
         a pool of sparks."""
-        laser_stops = hex_colors(LASER_GRADIENT_STOPS)
-        laser_gradient = Gradient(laser_stops, [6], loop=True)
-        spark_stops = hex_colors(SPARK_GRADIENT_STOPS)
-        spark_gradient = Gradient(spark_stops, [3, 8])
+        laser_gradient = Gradient(hex_colors(LASER_GRADIENT_STOPS), [6], loop=True)
+        spark_gradient = Gradient(hex_colors(SPARK_GRADIENT_STOPS), [3, 8])
         for spark in self.sparks.fill(self.term, 2000):
             character = self.term.chars[spark]
             character.layer = 2
@@ -126,7 +123,7 @@ class LaserEtch:
                     char_id = self.pending.pop(0)
                 self.term.set_visible(char_id, True)
                 self.term.activate(char_id)
-                target = copy(self.term.chars[char_id].input_coord)
+                target = self.term.chars[char_id].input_coord
                 self.reposition(target)
             self.char_delay = ETCH_DELAY
         else:

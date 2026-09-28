@@ -4,7 +4,7 @@ from __future__ import annotations
 import random
 from typing import Final
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from engine import Grouping, Scene, Terminal, randint
 from geometry import Coord
@@ -161,8 +161,7 @@ class Matrix:
         self.pending = []
         self.active = []
         self.full = []
-        rain_stops = hex_colors(RAIN_COLOR_GRADIENT)
-        self.rain_colors = Gradient(rain_stops, [6])
+        self.rain_colors = Gradient(hex_colors(RAIN_COLOR_GRADIENT), [6])
         self.highlight = hex_color(HIGHLIGHT_COLOR)
         self.column_delay = 0
         self.resolve_delay = RESOLVE_DELAY
@@ -173,13 +172,12 @@ class Matrix:
         self.build()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.RADIAL)
-        highlight = copy(self.highlight)
+        highlight = self.highlight
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            final_color = final_colors[copy(character.input_coord)]
+            final_color = final_colors[character.input_coord]
             resolve = Scene("resolve")
             resolve_gradient = Gradient([highlight, final_color], [8])
             for color in resolve_gradient.spectrum:

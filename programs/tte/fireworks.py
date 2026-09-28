@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import in_out_quart, out_circ, out_expo
 from engine import Path, Scene, Sync, Terminal, randint
@@ -43,7 +43,7 @@ class Fireworks:
         burst: list[Coord] = []
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             if len(shell) == self.volume or not shell:
                 # TTE starts with an empty shell, which is launched last.
                 self.shells.append(shell)
@@ -75,8 +75,7 @@ class Fireworks:
             self.shells.append(shell)
 
     def prepare_scenes(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.HORIZONTAL)
         firework_colors = hex_colors(FIREWORK_COLORS)
         white = Color(255, 255, 255)
@@ -94,7 +93,7 @@ class Fireworks:
                     bloom.add_frame(character.input_symbol, 2, color)
                 character.add_scene(bloom)
                 fall = Scene("fall")
-                final_color = final_colors[copy(character.input_coord)]
+                final_color = final_colors[character.input_coord]
                 fall_gradient = Gradient([shell_color, final_color], [15])
                 symbol = [character.input_symbol]
                 fall.apply_gradient_to_symbols(symbol, 10, fall_gradient)

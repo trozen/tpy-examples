@@ -2,7 +2,7 @@
 they reach each cell: the paths that burn's fire and laseretch's laser follow."""
 from __future__ import annotations
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from engine import Terminal, randint
 
@@ -31,8 +31,7 @@ def prims_order(term: Terminal, start: int32) -> Own[list[int32]]:
         order.append(linked)
         if unvisited:
             edge.append(current)
-        onward = unvisited_neighbors(term, linked, visited)
-        if onward:
+        if unvisited_neighbors(term, linked, visited):
             edge.append(linked)
     return order
 
@@ -40,7 +39,7 @@ def prims_order(term: Terminal, start: int32) -> Own[list[int32]]:
 def unvisited_neighbors(term: Terminal, char_id: int32, visited: list[bool]) -> Own[list[int32]]:
     found: list[int32] = []
     for neighbor in term.neighbors(char_id):
-        coord = copy(term.chars[neighbor].input_coord)
+        coord = term.chars[neighbor].input_coord
         if not visited[neighbor] and term.canvas.coord_is_in_text(coord):
             found.append(neighbor)
     return found

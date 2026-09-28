@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from engine import EventKind, Scene, Terminal, randint, split_characters
 from graphics import Color, Direction, Gradient, choose_color, hex_colors
@@ -43,8 +43,7 @@ class Decrypt:
     def build(self) -> None:
         symbols = split_characters(KEYBOARD + BLOCKS + BOX_DRAWING + LATIN)
         cipher_colors = hex_colors(CIPHERTEXT_COLORS)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
@@ -73,7 +72,7 @@ class Decrypt:
             character.add_scene(slow)
             discovered = Scene("discovered")
             white = Color(255, 255, 255)
-            final_color = final_colors[copy(character.input_coord)]
+            final_color = final_colors[character.input_coord]
             discovered_gradient = Gradient([white, final_color], [10])
             input_symbol = [character.input_symbol]
             discovered.apply_gradient_to_symbols(input_symbol, 5, discovered_gradient)

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import in_out_quad, in_out_sine
 from engine import Path, Terminal
@@ -76,12 +76,11 @@ class Spotlights:
     def build(self) -> None:
         for _ in range(SPOTLIGHT_COUNT):
             self.make_spotlight()
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            bright = final_colors[copy(character.input_coord)]
+            bright = final_colors[character.input_coord]
             dark = adjust_brightness(bright, 0.2)
             self.bright[char_id] = bright
             self.dark[char_id] = dark
@@ -99,7 +98,7 @@ class Spotlights:
         range_ = self.illuminate_range
         in_range: set[int32] = set()
         for spotlight in self.spotlights:
-            position = copy(self.term.chars[spotlight].coord)
+            position = self.term.chars[spotlight].coord
             for coord in find_coords_in_circle(position, range_):
                 char_id = self.term.at(coord)
                 if char_id >= 0 and not self.term.chars[char_id].is_fill:
@@ -110,10 +109,10 @@ class Spotlights:
                 character.set_appearance(character.input_symbol, self.dark[char_id])
         for char_id in in_range:
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             distance = -1.0
             for spotlight in self.spotlights:
-                position = copy(self.term.chars[spotlight].coord)
+                position = self.term.chars[spotlight].coord
                 length = find_length_of_line(position, home)
                 if distance < 0 or length < distance:
                     distance = length

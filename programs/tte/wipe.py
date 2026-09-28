@@ -1,7 +1,7 @@
 """wipe: the text is wiped onto the canvas diagonally, from the top left corner."""
 from __future__ import annotations
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import SequenceEaser, in_out_circ
 from engine import Grouping, Scene, Terminal
@@ -29,13 +29,12 @@ class Wipe:
     def build(self) -> None:
         self.groups = self.term.grouped(Grouping.DIAGONAL_TOP_LEFT_TO_BOTTOM_RIGHT)
         self.easer = SequenceEaser(len(self.groups), in_out_circ)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         first = final_gradient.spectrum[0]
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            final_color = final_colors[copy(character.input_coord)]
+            final_color = final_colors[character.input_coord]
             wipe_gradient = Gradient([first, final_color], FINAL_GRADIENT_STEPS)
             symbol = [character.input_symbol]
             wipe = Scene("wipe")

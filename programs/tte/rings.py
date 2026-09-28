@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import out_cubic, out_quad, out_sine
 from engine import EventKind, Path, Scene, Terminal, randint
@@ -69,14 +69,13 @@ class Rings:
         self.build()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         ring_colors = hex_colors(RING_COLORS)
         pending: list[int32] = []
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             start = Scene("start")
             start.add_frame(character.input_symbol, 1, final_colors[home])
             character.add_scene(start)
@@ -119,8 +118,8 @@ class Rings:
         ring = self.rings[ring_number]
         character = self.term.chars[char_id]
         symbol = [character.input_symbol]
-        final_color = final_colors[copy(character.input_coord)]
-        ring_color = copy(ring.color)
+        final_color = final_colors[character.input_coord]
+        ring_color = ring.color
         spin = Scene("gradient")
         spin.apply_gradient_to_symbols(symbol, 3, Gradient([final_color, ring_color], [8]))
         character.add_scene(spin)
@@ -159,7 +158,7 @@ class Rings:
             character = self.term.chars[char_id]
             current = character.active_path_name()
             ring.last_path[char_id] = current if current else "0"
-            position = copy(character.coord)
+            position = character.coord
             self.make_disperse_path(char_id, position)
             character.activate_path_named("disperse")
             character.activate_scene("disperse")
@@ -169,7 +168,7 @@ class Rings:
         for char_id in ring.chars:
             character = self.term.chars[char_id]
             last = ring.last_path[char_id]
-            target = copy(character.paths[character.path_index(last)].first_waypoint)
+            target = character.paths[character.path_index(last)].first_waypoint
             condense = Path(0.1)
             condense.add_waypoint(target)
             self.condense_count += 1
@@ -191,9 +190,9 @@ class Rings:
                 for ring in self.rings:
                     for char_id in ring.chars:
                         character = self.term.chars[char_id]
-                        ring_start = copy(character.paths[character.path_index("0")].first_waypoint)
+                        ring_start = character.paths[character.path_index("0")].first_waypoint
                         self.make_disperse_path(char_id, ring_start)
-                        first_drift = copy(character.paths[character.path_index("disperse")].first_waypoint)
+                        first_drift = character.paths[character.path_index("disperse")].first_waypoint
                         initial = Path(0.3)
                         initial.ease = out_cubic
                         initial.add_waypoint(first_drift)

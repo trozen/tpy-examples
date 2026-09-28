@@ -1,7 +1,7 @@
 """print: the text is printed line by line, a print head returning for each new line."""
 from __future__ import annotations
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import in_out_quad
 from engine import EventKind, Grouping, Path, Scene, Terminal
@@ -63,8 +63,7 @@ class Printer:
         self.build()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.DIAGONAL)
         white = Color(255, 255, 255)
         for line in self.term.grouped(Grouping.ROW_TOP_TO_BOTTOM, include_fill=True):
@@ -83,7 +82,7 @@ class Printer:
                     printed.append(char_id)
             for char_id in printed:
                 character = self.term.chars[char_id]
-                home = copy(character.input_coord)
+                home = character.input_coord
                 character.move_to(Coord(home.column, 1))
                 final_color = final_colors.get(home, white)
                 gradient = Gradient([white, final_color], [5])

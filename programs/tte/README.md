@@ -200,14 +200,14 @@ the rest of the surface darkens away.
   `docs/STRING_WIDTH_DESIGN.md`; revert once `str` indexes by code point.
 - **`chr()` above 127 returns one wrong byte.** It compiles to
   `static_cast<char>`. decrypt's cipher symbols, which TTE builds with `chr()`
-  over code point ranges, are spelled out as string literals. Not filed
-  upstream yet.
+  over code point ranges, are spelled out as string literals. Tracked in
+  tpy-lang's `BUGS.md` (`chr-above-127-truncates`).
 - **Ctrl-C can't be caught.** TTE restores the cursor in a `finally` when it
   is interrupted. Outside `asyncio`, TurboPython doesn't turn SIGINT into
   `KeyboardInterrupt`, and `signal.signal` doesn't exist yet. So stopping an
-  effect early leaves the cursor hidden; `tput cnorm` shows it again. The
-  `signal` module is at ~5% in tpy-lang's stdlib roadmap; restore the cursor
-  in a `finally` once handlers can be installed.
+  effect early leaves the cursor hidden; `tput cnorm` shows it again. Tracked
+  in tpy-lang's `TODO.md` ("Synchronous SIGINT -> `KeyboardInterrupt`");
+  restore the cursor in a `finally` once SIGINT can be caught.
 - **`sys.stdin` is missing.** Piped text is read with `os.read(0, ...)`.
   Tracked in tpy-lang's `TODO.md` ("Downstream-blocked stdlib gaps (2026-08-03
   port report)").
@@ -218,7 +218,8 @@ the rest of the surface darkens away.
   those bits itself, and every `randint` in the port goes through it, as do
   sandstorm's random letters, drawn from a pool that can hold just one. The
   remaining `randrange` and `choice` calls always have more than one value
-  to choose from. Not filed upstream yet.
+  to choose from. Tracked in tpy-lang's `BUGS.md`
+  (`randbelow-one-skips-draw`).
 - **Call arguments evaluate right to left.** Where one expression made several
   random draws, the draws are bound to locals first: decrypt's typing frame,
   the fire's starting cell, a spark's target, and a sandstorm grain's symbol
@@ -229,49 +230,56 @@ the rest of the surface darkens away.
   Compiled, that function reads its parameters from `make_easing`'s stack frame
   after it has returned, so the lightning flash eased along garbage. Returning
   a callable-class instance as a `Callable` isn't supported either, so the
-  thunderstorm builds a `CubicBezier` directly. Not filed upstream yet.
+  thunderstorm builds a `CubicBezier` directly. Tracked in tpy-lang's
+  `BUGS.md` (`escaping-closure-sibling-capture-dangles`).
 - **An `Optional` field of a `ValueType` record can't be set in a
   constructor.** `Visual` has `fg: Color` plus `colored: bool` rather than
   `fg: Color | None`. Tracked in tpy-lang's `BUGS.md`
   (`valuetype-optional-ctor-member-init`).
-- **A `ValueType` field can't be bound to a local or passed on directly.**
-  `coord = character.input_coord` is refused, as are such a field (or a
-  `copy()` of it) as a call argument, and `return self.frames[i].visual`. So
-  the port takes a `copy()` into a local first, returns `Own[...]`
-  (`visual_at`, `Path.step`), and gives `Character` small methods
-  (`move_to`, `return_home`, `set_symbol`, `set_scene_ease`) where a field
-  write through a list element is refused too. Not filed upstream yet.
+- **Some `ValueType` field reads and writes are refused.** A list element's
+  field can't be passed as an argument (`f(term.chars[i].input_coord)`), nor
+  a field two hops deep to a constructor (`Visual(symbol, self.visual.fg,
+  ...)`), so those are bound to a local first. A field can't be written
+  through a list element either, so `Character` has small methods
+  (`move_to`, `return_home`, `set_symbol`, `set_scene_ease`) that the
+  effects call instead. Tracked in tpy-lang's `BUGS.md`
+  (`valuetype-field-read-rejects-family`, `deep-field-chain-at-record-arg`,
+  `nested-field-target-container-write`).
 - **`list.sort(key=...)` is missing, and a `sorted(key=lambda ...)` that
   captures `self` is refused.** `Terminal.characters()` and `grouped()` sort
-  `(key, ..., id)` tuples. Not filed upstream yet.
+  `(key, ..., id)` tuples. Tracked in tpy-lang's `TODO.md` ("`key=` keyword
+  on `list.sort()`") and `BUGS.md` (`sorted-key-lambda-self-capture-rejects`).
 - **`int(text, 16)` is missing.** `hex_color` looks each digit up in
-  `"0123456789abcdef"`. Not filed upstream yet.
+  `"0123456789abcdef"`. Tracked in tpy-lang's `TODO.md` ("`int(text, base)`
+  two-argument form").
 - **`random.choice` can't infer its element type for a list of records.**
   `graphics.choose_color` indexes with `rng.randint(0, len(colors) - 1)`,
-  which draws exactly as `choice` does. Not filed upstream yet.
+  which draws exactly as `choice` does. Tracked in tpy-lang's `BUGS.md`
+  (`random-choice-record-list-rejects`).
 - **A conditional expression mixing a list element and a string literal
   dangles.** In swarm, `then = names[i + 1] if ... else ""` compiled to a
   `std::string_view` of the temporary `std::string` the C++ `?:` produces, so
   the name stored from it was garbage and the run failed with a `KeyError`. It
-  is a plain `if` now. Not filed upstream yet.
+  is a plain `if` now. Tracked in tpy-lang's `BUGS.md`
+  (`ternary-list-elem-vs-literal-view-dangles`).
 - **A name bound in one `if` branch and reused as a loop variable in another
   isn't declared there.** crumble's reset loop failed to compile (`'char_id'
-  was not declared in this scope`) until it got a name of its own. Not filed
-  upstream yet.
-- **A local named `char` breaks the C++ build.** One `char` local was declared
-  as `char` but used as `char_`. Character locals are called `character`. Not
-  filed upstream yet.
+  was not declared in this scope`) until it got a name of its own. Tracked in
+  tpy-lang's `BUGS.md` (`branch-hoist-later-arm-loop-target-undeclared`).
 - **`argparse` gaps.** `--help` leaves out a positional's `choices`, so the
   effect names would not appear in it; `choices=` must also be a list
   literal. Instead the effect is checked against `EFFECTS` by hand, and the
   help's epilog lists the effects. `parser.print_help()` can't be called inside an
   `if` (the builder-trace macro refuses it), so a bare run parses
-  `["--help"]` in place of empty arguments. Not filed upstream yet.
+  `["--help"]` in place of empty arguments. Tracked in tpy-lang's `BUGS.md`
+  (`argparse-help-omits-positional-choices`) and `TODO.md` ("argparse
+  builder-trace limits hit by a real CLI").
 - **A mutation through a local alias doesn't count as mutating.** In print's
   `Row.move_up(term)`, `character = term.chars[i]` followed by
   `character.move_to(...)` left `term` inferred read-only, and the C++ build
   failed ("discards qualifiers"). The call goes through `term.chars[i]`
-  directly. Not filed upstream yet.
+  directly. Tracked in tpy-lang's `BUGS.md`
+  (`alias-of-param-field-mutation-not-propagated`).
 - **A skipped default is resolved in the caller's module.** With `Scene`'s
   parameters as `(name, sync=Sync.NONE, looping=False)`, laseretch's
   `Scene("laser", looping=True)` failed with `Undefined variable: 'Sync'`,
@@ -287,13 +295,10 @@ the rest of the surface darkens away.
   - iterating a field of a field, or of a list element (`self.rows[i].typed`)
   - iterating an `Own[list]` parameter
   - iterating a method call's result (`for b in s.encode():`)
-  - `if f():` where `f` returns a list
-  - calling such an `f` and discarding the result, or discarding what
-    `list.pop(i)` returns (`del xs[i]` works)
+  - discarding what `list.pop(i)` returns on a list of records (`del xs[i]`
+    works)
   - `spectrum[round(x)]`
   - indexing a tuple loop variable, or the tuple `list.pop()` returns
-  - a list literal of fields, or a list literal or function call's result
-    passed straight to a constructor (`Gradient(hex_colors(...), [n])`)
   - a method call's result used directly as an argument
   - a local alias of a record field (`canvas = self.term.canvas`)
   - a field of a temporary (`Gradient(...).spectrum`)
@@ -305,7 +310,12 @@ the rest of the surface darkens away.
     in `__init__`
 
   In the same vein, `own_iter()` still warned about copying a list it should
-  have moved, so matrix pops its columns off instead. Not filed upstream yet.
+  have moved, so matrix pops its columns off instead. Of these, tpy-lang's
+  `BUGS.md` tracks the discarded `list.pop(i)`
+  (`list-pop-discarded-result-rejects`), the tuple `list.pop()` returns
+  (`pop-result-tuple-subscript-rejects`), the unannotated float list
+  (`unannotated-global-float-list-subscript`) and `own_iter()`
+  (`own-iter-spurious-copy-warning`); the rest are not filed upstream yet.
 
 ## Verification
 

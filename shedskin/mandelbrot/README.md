@@ -21,31 +21,17 @@ The original states no license.
 ## Changes from the original
 
 - Annotated `mandelbrot()` — `max_iterations: int32 = 1000`, returning `None`.
-- `zi` and `zr` are initialised to `0.0` instead of `0`, and the `TIME` line is
-  an f-string — see below.
+- `zi` and `zr` are initialised to `0.0` instead of `0`. A TurboPython local
+  has one numeric type, and these are assigned floats inside the loop, so
+  starting them from an integer literal is a compile error rather than a
+  silent widening as in CPython. The same goes for the `t0` placeholder bound
+  ahead of the timing loop.
+- The `TIME` line is an f-string — see below.
 
 Nothing else changed: the algorithm, the loop structure, the benchmark harness and
 the output are the original's.
 
 ## TurboPython bugs worked around
-
-- **`zi = 0` / `zr = 0` produced silently wrong results.** These locals are inferred
-  as `int32` from the integer literal, then assigned floats inside the loop. That
-  compiles without error or warning, but the values are read back **truncated to
-  integers** by the arithmetic in the following iteration. Every one of the 6,084
-  points then tested as inside the set, and the program printed a solid block of
-  `#`. Initialising them as `0.0` avoids it.
-
-  Minimal reproducer:
-
-  ```python
-  z = 0
-  for i in range(3):
-      sq = z * z      # CPython: 0, 2.25, 9.0   TurboPython: 0, 1, 9
-      z = z + 1.5
-  ```
-
-  Not filed upstream yet. Restore the original `0` once this is fixed.
 
 - **No printf-style `%` formatting on `str`.** `print('TIME %.2f' %
   (time.time()-t0))` became an f-string. Tracked in tpy-lang's `TODO.md`

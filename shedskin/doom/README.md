@@ -71,6 +71,12 @@ and it is invisible: it compiles cleanly and produces identical output.
 (`uint16`, `uint8`), which then collide with ordinary `int32` arithmetic, so
 each unpacked field is widened where it is read.
 
+**One numeric type per local.** A TurboPython local cannot hold an `int` on one
+path and a `float` on another, so the placeholder zeros in `draw_seg`'s
+non-portal branch are `0.0`, the texture Y offsets start from
+`float(frontSidedef.offset_y)`, and `textureX0`/`textureX1` in the render loop
+are annotated `float`. CPython mixes the two freely; the values are the same.
+
 **Owned copies of `bytes` slices.** Slicing `bytes` yields a non-owning view, so
 anything stored in the entry table or used as a dict key takes an owned copy.
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import in_cubic, in_expo, in_out_sine, out_expo
 from engine import EventKind, Path, Scene, Sync, Terminal, randint
@@ -47,8 +47,7 @@ class Blackhole:
         self.build()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         self.final_colors = self.term.text_colors(final_gradient, Direction.DIAGONAL)
         self.prepare()
         self.formation_delay = max(100 // len(self.ring), 6)
@@ -58,8 +57,7 @@ class Blackhole:
 
     def prepare(self) -> None:
         """Pick the ring's characters and scatter the rest as stars."""
-        star_stops = [hex_color("4a4a4d"), hex_color("ffffff")]
-        star_gradient = Gradient(star_stops, [6])
+        star_gradient = Gradient([hex_color("4a4a4d"), hex_color("ffffff")], [6])
         black = Color(0, 0, 0)
         ring_size = self.radius * 3 // TERMINAL_ROW_SCALE
         available = self.term.characters()
@@ -144,7 +142,7 @@ class Blackhole:
         star_colors = hex_colors(STAR_COLORS)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             around = find_coords_on_circle(home, 3 * TERMINAL_ROW_SCALE, 5)
             nearby = around[randint(0, 4)]
             burst = Path(randint(3, 4) / 10)

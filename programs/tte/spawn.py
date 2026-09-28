@@ -7,7 +7,7 @@ from __future__ import annotations
 import math
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import out_sine
 from engine import Scene, Terminal, randint
@@ -81,7 +81,7 @@ class Spawn:
         self.flame_colors = hex_colors(FLAME_COLORS)
         for _ in range(SECTORS):
             self.flame_length.append(1.0)
-        center = copy(self.center)
+        center = self.center
         for row in range(1, self.term.canvas.top + 1):
             for column in range(1, self.term.canvas.right + 1):
                 coord = Coord(column, row)
@@ -94,14 +94,13 @@ class Spawn:
                 angle = math.atan2((row - center.row) * TERMINAL_ROW_SCALE, column - center.column)
                 sector = int((angle + math.pi) / (2 * math.pi) * SECTORS) % SECTORS
                 self.glow_sector.append(sector)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors_at_angle(final_gradient, FINAL_GRADIENT_ANGLE)
         hot = hex_color(HOT_COLOR)
         plasma_colors = hex_colors(PLASMA_COLORS)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             # Flickering plasma when the fire leaves it (or, for some, the
             # character at once), then the character cooling from white-hot
             # at a pace of its own.

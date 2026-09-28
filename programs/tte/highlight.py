@@ -1,7 +1,7 @@
 """highlight: a specular highlight runs diagonally across the text."""
 from __future__ import annotations
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import SequenceEaser, in_out_circ
 from engine import Grouping, Scene, Terminal
@@ -27,12 +27,11 @@ class Highlight:
     def build(self) -> None:
         self.groups = self.term.grouped(Grouping.DIAGONAL_BOTTOM_LEFT_TO_TOP_RIGHT)
         self.easer = SequenceEaser(len(self.groups), in_out_circ)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            base = final_colors[copy(character.input_coord)]
+            base = final_colors[character.input_coord]
             bright = adjust_brightness(base, HIGHLIGHT_BRIGHTNESS)
             # Up to the highlight, across its width, and back down.
             highlight_gradient = Gradient([base, bright, bright, base], [3, HIGHLIGHT_WIDTH, 3])

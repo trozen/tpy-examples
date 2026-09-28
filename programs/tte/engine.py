@@ -158,7 +158,7 @@ class Scene:
         self.done = False
         self.easing_current_step = 0
 
-    def visual_at(self, index: int32) -> Own[Visual]:
+    def visual_at(self, index: int32) -> Visual:
         return self.frames[index].visual
 
     def advance(self) -> int32:
@@ -255,7 +255,7 @@ class Path:
     def _add_waypoint(self, coord: Coord, curved: bool, control: Coord) -> None:
         self.waypoint_count += 1
         if self.waypoint_count > 1:
-            start = copy(self.last_end)
+            start = self.last_end
             segment = Segment(start, coord, curved, control)
             self.total_distance += segment.distance
             self.segments.append(segment)
@@ -288,8 +288,8 @@ class Path:
         self._add_waypoint(coord, True, control)
 
     def start_from(self, origin: Coord) -> None:
-        first = copy(self.first_waypoint)
-        control = copy(self.first_control)
+        first = self.first_waypoint
+        control = self.first_control
         segment = Segment(origin, first, self.first_curved, control)
         self.total_distance += segment.distance
         if self.has_origin:
@@ -302,7 +302,7 @@ class Path:
         self.hold_time_remaining = self.hold_time
         self.max_steps = round(self.total_distance / self.speed)
 
-    def step(self) -> Own[Coord]:
+    def step(self) -> Coord:
         if not self.max_steps or self.current_step >= self.max_steps or not self.total_distance:
             return self.segments[len(self.segments) - 1].end
         self.current_step += 1
@@ -396,8 +396,7 @@ class Character:
         self.coord = coord
 
     def return_home(self) -> None:
-        home = copy(self.input_coord)
-        self.coord = home
+        self.coord = self.input_coord
 
     # -- appearance ---------------------------------------------------------
 
@@ -406,7 +405,7 @@ class Character:
 
     def set_symbol(self, symbol: str) -> None:
         """Change the symbol, keeping the color."""
-        fg = copy(self.visual.fg)
+        fg = self.visual.fg
         self.visual = Visual(symbol, fg, self.visual.colored)
 
     def add_scene(self, scene: Own[Scene]) -> int32:
@@ -766,11 +765,11 @@ class Terminal:
         """Text characters (and, optionally, fill), top to bottom, left to right."""
         keyed: list[tuple[int32, int32, int32]] = []
         for char_id in self.input_ids:
-            coord = copy(self.chars[char_id].input_coord)
+            coord = self.chars[char_id].input_coord
             keyed.append((-coord.row, coord.column, char_id))
         if include_fill:
             for char_id in self.fill_ids:
-                coord = copy(self.chars[char_id].input_coord)
+                coord = self.chars[char_id].input_coord
                 keyed.append((-coord.row, coord.column, char_id))
         ids: list[int32] = []
         for key in sorted(keyed):
@@ -782,7 +781,7 @@ class Terminal:
         # Bottom to top, then left to right: the order within each group.
         keyed: list[tuple[int32, int32, int32]] = []
         for char_id in self.characters(include_fill):
-            coord = copy(self.chars[char_id].input_coord)
+            coord = self.chars[char_id].input_coord
             keyed.append((coord.row, coord.column, char_id))
         groups: dict[int32, list[int32]] = {}
         for entry in sorted(keyed):
@@ -810,7 +809,7 @@ class Terminal:
 
     def neighbors(self, char_id: int32) -> Own[list[int32]]:
         """The characters north, south, west and east of `char_id`, where they exist."""
-        coord = copy(self.chars[char_id].input_coord)
+        coord = self.chars[char_id].input_coord
         found: list[int32] = []
         column = coord.column
         row = coord.row

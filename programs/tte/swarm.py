@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import in_out_quad, in_out_sine, out_sine
 from engine import Path, Scene, Sync, Terminal, randint
@@ -56,8 +56,7 @@ class Swarm:
     def build(self) -> None:
         swarm_size = max(round(len(self.term.characters()) * SWARM_SIZE), 1)
         self.make_swarms(swarm_size)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.HORIZONTAL)
         base_colors = hex_colors(BASE_COLORS)
         flash = hex_color(FLASH_COLOR)
@@ -80,7 +79,7 @@ class Swarm:
             spawn = self.term.canvas.random_coord_outside()
             area_count = randint(SWARM_AREA_COUNT_MIN, SWARM_AREA_COUNT_MAX)
             areas: dict[Coord, list[Coord]] = {}
-            focus = copy(spawn)
+            focus = spawn
             chosen = 0
             while chosen < area_count:
                 candidates = find_coords_on_circle(focus, radius,
@@ -99,7 +98,7 @@ class Swarm:
                 areas[focus] = find_coords_in_circle(focus, area_radius)
                 focus = next_focus
             for char_id in swarm:
-                home = copy(self.term.chars[char_id].input_coord)
+                home = self.term.chars[char_id].input_coord
                 final_color = final_colors[home]
                 self.prepare_character(char_id, spawn, mirror, areas, flash, final_color)
 
@@ -131,7 +130,7 @@ class Swarm:
             area_number += 1
         home = Path(0.45)
         home.ease = in_out_quad
-        home_coord = copy(character.input_coord)
+        home_coord = character.input_coord
         home.add_waypoint(home_coord)
         names.append(str(len(names)))
         paths.append(home)

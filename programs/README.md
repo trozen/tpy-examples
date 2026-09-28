@@ -8,7 +8,7 @@ what it is and how it is verified.
 | | name | description | lines |
 | - | ---- | ----------- | ----- |
 | | [curl](curl/) | a curl-like HTTP and HTTPS client on `tplib.requests` | 145 |
-| | [tte](tte/) | terminal text effects — a selection of TerminalTextEffects' effects, plus three of our own | 5535 |
+| | [tte](tte/) | terminal text effects — a selection of TerminalTextEffects' effects, plus three of our own | 5503 |
 
 ## Running one
 

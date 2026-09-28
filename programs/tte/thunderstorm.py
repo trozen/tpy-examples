@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import CubicBezier, in_circ, out_quint
 from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
@@ -50,8 +50,7 @@ class Thunderstorm:
         self.rain_pool = ParticlePool(RAINDROP_SYMBOLS)
         self.spark_pool = ParticlePool(SPARK_SYMBOLS, 2000)
         self.raindrop_color = hex_color("aaaaff")
-        spark_stops = [hex_color(SPARK_GLOW_COLOR), BACKGROUND]
-        self.spark_gradient = Gradient(spark_stops, [7])
+        self.spark_gradient = Gradient([hex_color(SPARK_GLOW_COLOR), BACKGROUND], [7])
         self.strike_ids = set()
         self.available_strike_chars = []
         self.pending_strike_chars = []
@@ -87,15 +86,14 @@ class Thunderstorm:
         character.add_scene(glow)
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         self.build_strike_characters(200)
         glowing = hex_color(GLOWING_TEXT_COLOR)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
             symbol = character.input_symbol
-            visible = final_colors[copy(character.input_coord)]
+            visible = final_colors[character.input_coord]
             storm = adjust_brightness(visible, 0.5)
             glow = Scene("glow")
             glow_gradient = Gradient([glowing, storm], [7])
@@ -218,7 +216,7 @@ class Thunderstorm:
             self.strike_progression_delay = 1
             if not self.pending_strike_chars:
                 impact_char = self.active_strike_chars[len(self.active_strike_chars) - 1]
-                impact = copy(self.term.chars[impact_char].coord)
+                impact = self.term.chars[impact_char].coord
                 for _ in range(randint(12, 18)):
                     self.emit_spark(impact)
                 self.last_strike_char = strike_char
@@ -255,7 +253,7 @@ class Thunderstorm:
     def strike_faded(self, strike_char: int32) -> None:
         """A bolt character has faded out: light up the text it hit and put it away."""
         self.term.set_visible(strike_char, False)
-        hit = copy(self.term.chars[strike_char].coord)
+        hit = self.term.chars[strike_char].coord
         target = self.term.at(hit)
         if target >= 0 and self.term.chars[target].visible:
             self.term.chars[target].activate_scene("glow")

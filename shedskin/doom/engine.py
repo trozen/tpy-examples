@@ -864,12 +864,12 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: int32,
         hasLowerWall = backFloor > frontFloor
         hasUpperWall = backCeil < frontCeil
     else:
-        backCeil = 0
-        backFloor = 0
-        scrYABackCeil = 0
-        scrYABackFloor = 0
-        scrYBBackCeil = 0
-        scrYBBackFloor = 0
+        backCeil = 0.0
+        backFloor = 0.0
+        scrYABackCeil = 0.0
+        scrYABackFloor = 0.0
+        scrYBBackCeil = 0.0
+        scrYBBackFloor = 0.0
         hasLowerWall = False
         hasUpperWall = False
 
@@ -933,10 +933,10 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: int32,
             middleDy = middleMaxY - middleMinY
 
             if middleDy == 0:  # on collision with wall
-                middleTextureYStep = 0
+                middleTextureYStep = 0.0
             else:
                 middleTextureYStep = (frontCeil - frontFloor) / middleDy
-            middleTextureY = frontSidedef.offset_y
+            middleTextureY = float(frontSidedef.offset_y)
 
             if middleMinY < lowerOcclusion[x]:
                 dif = lowerOcclusion[x] - middleMinY
@@ -969,7 +969,7 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: int32,
 
                 lowerDy = lowerMaxY - lowerMinY
                 lowerTextureYStep = (backFloor - frontFloor) / lowerDy
-                lowerTextureY = frontSidedef.offset_y
+                lowerTextureY = float(frontSidedef.offset_y)
 
                 if lowerMinY < lowerOcclusion[x]:
                     dif = lowerOcclusion[x] - lowerMinY
@@ -1015,7 +1015,7 @@ def draw_seg(seg: Seg, map_: Map, drawsurf: bytearray, scrXA: int32,
 
                 upperDy = upperMaxY - upperMinY
                 upperTextureYStep = (frontCeil - backCeil) / upperDy
-                upperTextureY = frontSidedef.offset_y
+                upperTextureY = float(frontSidedef.offset_y)
 
                 if upperMinY < lowerOcclusion[x]:
                     dif = lowerOcclusion[x] - upperMinY
@@ -1085,8 +1085,8 @@ def render(map_: Map, frame_count: int32) -> Own[bytearray]:
 
             if not (za <= 0.1 and zb <= 0.1):
                 frontSidedef = seg.sidedef_front
-                textureX0 = seg.offset + frontSidedef.offset_x
-                textureX1 = seg.offset + seg.length + frontSidedef.offset_x
+                textureX0: float = seg.offset + frontSidedef.offset_x
+                textureX1: float = seg.offset + seg.length + frontSidedef.offset_x
 
                 if za <= 0.1:
                     p = (zb - 0.1) / (zb - za)

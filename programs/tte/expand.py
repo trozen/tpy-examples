@@ -1,7 +1,7 @@
 """expand: the text expands out of a single point at the center of the canvas."""
 from __future__ import annotations
 
-from tpy import Own, copy
+from tpy import Own
 
 from easing import in_out_quart
 from engine import EventKind, Path, Scene, Sync, Terminal
@@ -20,15 +20,14 @@ class Expand:
         self.build()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.VERTICAL)
         first = final_gradient.spectrum[0]
         center = self.term.canvas.center()
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
             character.move_to(center)
-            home = copy(character.input_coord)
+            home = character.input_coord
             path = Path(MOVEMENT_SPEED)
             path.ease = in_out_quart
             path.add_waypoint(home)

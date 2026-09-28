@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import out_bounce, out_quint
 from engine import EventKind, Path, Scene, Sync, Terminal, randint
@@ -39,14 +39,13 @@ class Crumble:
         self.build()
 
     def build(self) -> None:
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors(final_gradient, Direction.DIAGONAL)
         white = Color(255, 255, 255)
         center = self.term.canvas.center()
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             symbol = character.input_symbol
             final_color = final_colors[home]
             weak = adjust_brightness(final_color, 0.65)

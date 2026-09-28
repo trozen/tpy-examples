@@ -7,7 +7,7 @@ from __future__ import annotations
 import math
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from easing import in_out_sine, out_sine
 from engine import Terminal
@@ -101,9 +101,7 @@ class Donut:
         across = (width / 2 - 1) / reach
         up = (height / 2 - 1) / (reach * ROW_ASPECT)
         self.spin_scale = max(1.0, min(across, up))
-        stops = hex_colors(SHADE_STOPS)
-        steps = [len(LUMINANCE) // 2]
-        gradient = Gradient(stops, steps)
+        gradient = Gradient(hex_colors(SHADE_STOPS), [len(LUMINANCE) // 2])
         for i in range(len(LUMINANCE)):
             self.shades.append(gradient.color_at_fraction(i / (len(LUMINANCE) - 1)))
         self.write_text()
@@ -248,14 +246,13 @@ class Donut:
             else:
                 symbol = self.term.chars[showing].input_symbol
                 lit = self.shades[max(shade, TEXT_MIN_SHADE)]
-                home = copy(self.term.chars[showing].input_coord)
+                home = self.term.chars[showing].input_coord
                 color = shift_color_towards(lit, final_colors[home], fade)
                 self.term.chars[glow_char].set_appearance(symbol, color)
             self.term.set_visible(glow_char, True)
 
     def final_gradient(self) -> Own[dict[Coord, Color]]:
-        stops = hex_colors(FINAL_GRADIENT_STOPS)
-        gradient = Gradient(stops, FINAL_GRADIENT_STEPS)
+        gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         return self.term.text_colors(gradient, Direction.VERTICAL)
 
     def every(self, step: float, bin: float) -> int32:
@@ -292,7 +289,7 @@ class Donut:
                 self.frame_count = 0
                 # From here on, the text exactly as it is, on the lit surface.
                 for cell in range(len(self.glow)):
-                    coord = copy(self.term.chars[self.glow[cell]].input_coord)
+                    coord = self.term.chars[self.glow[cell]].input_coord
                     char_id = self.term.at(coord)
                     if not self.term.chars[char_id].is_fill:
                         self.shown[cell] = char_id
@@ -325,7 +322,7 @@ class Donut:
             self.term.set_visible(glow_char, False)
         for char_id in self.term.characters():
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             character.set_appearance(character.input_symbol, final_colors[home])
             self.term.set_visible(char_id, True)
         self.phase = "complete"

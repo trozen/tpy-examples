@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import random
 
-from tpy import int32, Own, copy
+from tpy import int32, Own
 
 from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
 from geometry import Coord
@@ -74,14 +74,13 @@ class Sandstorm:
             for char_id in text:
                 self.letters.append(self.term.chars[char_id].input_symbol)
         sand_colors = hex_colors(SAND_COLORS)
-        final_stops = hex_colors(FINAL_GRADIENT_STOPS)
-        final_gradient = Gradient(final_stops, FINAL_GRADIENT_STEPS)
+        final_gradient = Gradient(hex_colors(FINAL_GRADIENT_STOPS), FINAL_GRADIENT_STEPS)
         final_colors = self.term.text_colors_at_angle(final_gradient, FINAL_GRADIENT_ANGLE)
         # Sand piles up from the bottom, its surface uneven.
         pile: list[tuple[float, int32]] = []
         for char_id in text:
             character = self.term.chars[char_id]
-            home = copy(character.input_coord)
+            home = character.input_coord
             sand = choose_color(sand_colors)
             character.set_appearance(random.choice(WIND_SYMBOLS), sand)
             restless = Scene("restless", looping=True)
@@ -138,7 +137,7 @@ class Sandstorm:
     def drift_in(self, char_id: int32) -> None:
         """A character blows in with the sand, and drops onto the pile."""
         character = self.term.chars[char_id]
-        home = copy(character.input_coord)
+        home = character.input_coord
         start = Coord(0, home.row + randint(0, WIND_DROP))
         control = Coord(home.column // 2, start.row)
         path = Path(1.0)
