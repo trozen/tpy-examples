@@ -5,7 +5,7 @@ Terminal text effects: a selection of the effects from
 animated in place in the terminal, with the engine underneath them rewritten
 for TurboPython, plus three effects of our own. ~5500 lines.
 
-![spawn, one of the effects written for this port, playing over the demo text](tte.webp)
+![spawn, one of the effects written for this port, playing over the demo text](images/tte.webp)
 
 *`tpy tte.py`: spawn, the default effect, in a 66×22 terminal at 30 frames a
 second. The other effects are listed by `tpy tte.py -h`.*

@@ -37,12 +37,12 @@ Examples are added in small batches, and appear here only once they fully work.
 | --- | ------- | ----------- | ----- |
 | | [adatron](adatron/) | Adatron SVM with a polynomial kernel | 203 |
 | | [ant](ant/) | Ant Colony Optimization for the Travelling Salesman Problem | 175 |
-| <img src="doom/doom.png" height="90"> | [doom](doom/) | DOOM WAD renderer, drawn with SDL2 | 1496 |
-| <img src="mandelbrot/mandelbrot.png" height="90"> | [mandelbrot](mandelbrot/) | The Mandelbrot set rendered as ASCII art | 43 |
-| <img src="oliva2/oliva2.png" height="90"> | [oliva2](oliva2/) | Sea-shell pigmentation patterns, written as a PGM image | 159 |
-| <img src="path_tracing/path_tracing.png" height="90"> | [path_tracing](path_tracing/) | Monte Carlo path tracer, written as a PPM image | 409 |
+| <img src="doom/images/doom.png" height="90"> | [doom](doom/) | DOOM WAD renderer, drawn with SDL2 | 1496 |
+| <img src="mandelbrot/images/mandelbrot.png" height="90"> | [mandelbrot](mandelbrot/) | The Mandelbrot set rendered as ASCII art | 43 |
+| <img src="oliva2/images/oliva2.png" height="90"> | [oliva2](oliva2/) | Sea-shell pigmentation patterns, written as a PGM image | 159 |
+| <img src="path_tracing/images/path_tracing.png" height="90"> | [path_tracing](path_tracing/) | Monte Carlo path tracer, written as a PPM image | 409 |
 | | [sieve](sieve/) | Two prime sieves, Atkin's and Eratosthenes' | 120 |
-| <img src="voronoi/voronoi.png" height="90"> | [voronoi](voronoi/) | A Voronoi diagram rendered as ASCII art | 59 |
+| <img src="voronoi/images/voronoi.png" height="90"> | [voronoi](voronoi/) | A Voronoi diagram rendered as ASCII art | 59 |
 
 ---
 

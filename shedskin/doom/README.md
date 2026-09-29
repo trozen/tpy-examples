@@ -3,7 +3,7 @@
 A DOOM WAD renderer: reads the original game's map data and draws it with a
 software BSP renderer, in a window via SDL2. ~1496 lines across three files.
 
-![E1M1 rendered by this example](doom.png)
+![E1M1 rendered by this example](images/doom.png)
 
 Textured walls, floors and ceilings, BSP traversal with a clip buffer, and
 per-column light-level shading -- all in annotated Python.

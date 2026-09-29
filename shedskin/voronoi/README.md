@@ -2,7 +2,7 @@
 
 A Voronoi diagram rendered as ASCII art. ~59 lines.
 
-![A Voronoi diagram as this example prints it](voronoi.png)
+![A Voronoi diagram as this example prints it](images/voronoi.png)
 
 ## Origin
 

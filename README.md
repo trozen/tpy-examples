@@ -93,16 +93,22 @@ port was verified. `make test` runs it; see [.verify/README.md](.verify/README.m
 
 ## Gallery
 
-[<img src="shedskin/doom/doom.png" alt="DOOM's E1M1 rendered by the doom example" height="300">](shedskin/doom/)
+[<img src="shedskin/doom/images/doom.png" alt="DOOM's E1M1 rendered by the doom example" height="300">](shedskin/doom/)
 
 E1M1, drawn by [`doom`](shedskin/doom/): a software BSP renderer in annotated
 Python, on SDL2 through TurboPython's native bindings.
 
-[<img src="shedskin/path_tracing/path_tracing.png" alt="A Cornell box rendered by the path_tracing example" height="300">](shedskin/path_tracing/)
+[<img src="shedskin/path_tracing/images/path_tracing.png" alt="A Cornell box rendered by the path_tracing example" height="300">](shedskin/path_tracing/)
 
 A Cornell box, drawn by [`path_tracing`](shedskin/path_tracing/): a Monte Carlo
 path tracer at ten thousand samples per pixel, with the material types
 dispatching through a `@dynamic` protocol.
+
+[<img src="programs/tte/images/tte.png" alt="The burn effect of the tte example, fire spreading through the demo text" height="300">](programs/tte/)
+
+Fire spreading through the demo text, drawn by [`tte`](programs/tte/)'s `burn`
+effect: TerminalTextEffects rewritten in TurboPython, where every character is
+an index into one list and every event a plain value.
 
 ## Licensing
 

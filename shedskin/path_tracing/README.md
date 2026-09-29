@@ -3,7 +3,7 @@
 A Monte Carlo path tracer: renders a Cornell box with a chrome and a glass
 sphere to a PPM image. ~409 lines.
 
-![The Cornell box rendered by this example](path_tracing.png)
+![The Cornell box rendered by this example](images/path_tracing.png)
 
 *`tpy path_tracing.py 10000`. Plain `tpy path_tracing.py` runs the
 original's benchmark instead, at ten samples per pixel — far grainier.*

@@ -197,6 +197,10 @@ keep whatever is there, verbatim. See `shedskin/README.md`.
 multi-module examples, rename the module containing `main` to `<dir>.py` and leave
 the other modules' names alone.
 
+**Images go in `<dir>/images/`**, never beside the entry point: nothing else in the
+directory may start with the example's name, so `tpy <Tab>` completes to `<dir>.py`.
+The same holds in `programs/`.
+
 **Keep timing scaffolding.** Most originals print elapsed time; leave it in and
 normalize it away when comparing output. Do not delete it.
 
