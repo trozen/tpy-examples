@@ -32,13 +32,13 @@ it is id Software's data, not ours. Download `DOOM1.WAD` (see
 (`libsdl2-dev` on Debian/Ubuntu).
 
 ```bash
-tpy -O doom.py path/to/DOOM1.WAD
+tpy doom.py path/to/DOOM1.WAD
 ```
 
 Arrow keys move, ctrl+left/right strafe, `q` quits.
 
 The WAD path is optional and defaults to `doom1.wad` in the current directory,
-so dropping the file here lets you just run `tpy -O doom.py`.
+so dropping the file here lets you just run `tpy doom.py`.
 
 ## Files
 
@@ -62,21 +62,23 @@ texture cases without `Optional`.
 `ClipBufferNode` is the exception: it is a recursive type that *owns* its
 children, so those are `Box[ClipBufferNode]`.
 
-**`Int32(...)` instead of `int(...)` for every coordinate conversion.** In
+**`int32(...)` instead of `int(...)` for every coordinate conversion.** In
 TurboPython `int` means arbitrary-precision `BigInt`, so `int(leftX + dx * x)`
 built a BigInt per pixel. This is the single most important change in the port
 and it is invisible: it compiles cleanly and produces identical output.
 
 **Widening `struct.unpack_from` results.** The macro yields exactly-sized types
-(`UInt16`, `UInt8`), which then collide with ordinary `Int32` arithmetic, so
+(`uint16`, `uint8`), which then collide with ordinary `int32` arithmetic, so
 each unpacked field is widened where it is read.
+
+**One numeric type per local.** A TurboPython local cannot hold an `int` on one
+path and a `float` on another, so the placeholder zeros in `draw_seg`'s
+non-portal branch are `0.0`, the texture Y offsets start from
+`float(frontSidedef.offset_y)`, and `textureX0`/`textureX1` in the render loop
+are annotated `float`. CPython mixes the two freely; the values are the same.
 
 **Owned copies of `bytes` slices.** Slicing `bytes` yields a non-owning view, so
 anything stored in the entry table or used as a dict key takes an owned copy.
-
-**Class order.** `Flat`, `Picture` and `Vec2` were moved above the classes that
-store them by value: generated classes appear in source order with no forward
-declarations, so a by-value field of a later class does not compile.
 
 **Two hot loops were hand-optimised**, both in the floor/ceiling span drawer,
 which is the large majority of a frame:
@@ -90,9 +92,8 @@ which is the large majority of a frame:
 
 **Structure.** `doom_main.py` became `doom.py` (the entry point must match the
 directory) and the engine became `engine.py`. The nested `move_player` closure
-became a plain function taking and returning the velocities. `WIDTH`/`HEIGHT`
-carry annotations because an unannotated module-level variable is not exported,
-and `Final` where they are genuinely constant.
+became a plain function taking and returning the velocities. `WIDTH` and
+`HEIGHT` are `Final`, since they are genuinely constant.
 
 **Stated invariants.** Three places dereference a value the compiler sees as
 nullable but that the WAD guarantees: a `PNAMES` patch referenced by a texture,
@@ -119,12 +120,22 @@ engine, which rendered one frame as a smoke test. Shed Skin builds the engine as
 an extension module, so that block was its standalone entry point; here the
 engine is only ever imported.
 
+## TurboPython bugs worked around
+
+- **A by-value field of a class declared later does not compile.** `Flat`,
+  `Picture` and `Vec2` were moved above the classes that store them by value.
+  The generated C++ declares classes in source order with only a forward
+  declaration, and a by-value member of an incomplete type is a C++ error
+  (`field 'b' has incomplete type`) that the compiler lets through to the C++
+  build instead of reporting or reordering. Not filed upstream yet; restore
+  the original class order once fixed.
+
 ## Notes
 
 The entry point also has a headless mode used to verify the port:
 
 ```bash
-tpy -O doom.py path/to/DOOM1.WAD dump 60     # render 60 frames -> frame.raw
+tpy doom.py path/to/DOOM1.WAD dump 60  # render 60 frames -> frame.raw
 ```
 
 Frames are deterministic when the player does not move, so this writes the

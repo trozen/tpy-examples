@@ -32,7 +32,7 @@ put it on the page.
 
 ```bash
 cd landing
-tpy -O mandelbrot.py
+tpy mandelbrot.py
 ```
 
 `requests_demo.py` and `async_demo.py` are compiled but not run by the

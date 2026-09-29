@@ -1,9 +1,9 @@
 """Build every example against the pinned compiler, and run the ones that can
 run, comparing what they print (and write) with the recorded outputs.
 
-`tpy -O` is used because that is how the READMEs tell people to run the
-examples. A failure prints the tail of the compiler's or the program's stderr,
-or the first line that differs from the recording.
+The default, optimized build is used because that is how the READMEs tell
+people to run the examples. A failure prints the tail of the compiler's or the
+program's stderr, or the first line that differs from the recording.
 """
 from __future__ import annotations
 
@@ -48,18 +48,18 @@ def _record(path: Path, text: str, bless: str) -> bool:
 
 
 def test_build(example: Example, build_root):
-    r = tpy(["-b", "-O", "-o", str(build_root / example.id), example.source.name],
+    r = tpy(["-b", "-o", str(build_root / example.id), example.source.name],
             cwd=example.cwd)
     assert r.returncode == 0, f"build failed:\n{_tail(r.stderr)}"
 
 
 def test_run(example: Example, build_root, bless):
     if example.build_only:
-        pytest.skip(f"build only: {example.build_only}")
+        pytest.skip(f"{example.id}: build only: {example.build_only}")
     for name in example.output_files:
         (example.cwd / name).unlink(missing_ok=True)
 
-    r = tpy(["-O", "-o", str(build_root / example.id), example.source.name],
+    r = tpy(["-o", str(build_root / example.id), example.source.name, *example.args],
             cwd=example.cwd)
     assert r.returncode == 0, f"exited with {r.returncode}:\n{_tail(r.stderr)}"
 

@@ -7,9 +7,9 @@ from random import random, seed # for generateRandomPoints
 from math import sqrt
 import time
 
-from tpy import Int32, Own
+from tpy import int32, Own
 
-def generateRandomPoints(npoints: Int32 = 6) -> Own[list[tuple[float, float]]]:
+def generateRandomPoints(npoints: int32 = 6) -> Own[list[tuple[float, float]]]:
     """Generate a few random points v1...vn"""
 #    print(npoints, "points x,y:")
     points = []
@@ -34,7 +34,7 @@ def closest(x: float, y: float, points: list[tuple[float, float]]) -> float:
     return sqrt(best) / sqrt(good)
 
 
-def generateScreen(points: list[tuple[float, float]], rows: Int32 = 40, cols: Int32 = 80) -> str:
+def generateScreen(points: list[tuple[float, float]], rows: int32 = 40, cols: int32 = 80) -> str:
     yfact = 1.0 / cols
     xfact = 1.0 / rows
     screen: list[str] = []
@@ -48,6 +48,7 @@ def generateScreen(points: list[tuple[float, float]], rows: Int32 = 40, cols: In
 
 
 if __name__ == '__main__':
+    t0 = 0.0
     for m in range(10):
         if m == 5:
             t0 = time.time()

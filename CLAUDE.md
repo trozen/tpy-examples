@@ -1,8 +1,9 @@
 # tpy-examples
 
 A curated gallery of example programs for [TurboPython](https://tpy-lang.org),
-linked from the project website. The current work is porting programs from the
-Shed Skin examples collection into `shedskin/`.
+linked from the project website. Most of the work is porting programs from the
+Shed Skin examples collection into `shedskin/`; the other categories hold programs
+written here.
 
 This is a **showcase**, not a test suite. tpy-lang has its own test suite; nothing
 here exists to exercise the compiler. Everything published here works.
@@ -29,10 +30,14 @@ When writing or modifying `.py` files compiled by tpy:
 tpy --install-agent-docs docs/
 ```
 
-Examples target **tpy-lang 0.5.1**. That version is pinned as the `.verify/tpy`
-submodule. When it changes, move the submodule to the new tag and update the
-version here and in `README.md` — the Requirements bullet and both `pip install`
-blocks. `make test` fails while the three disagree.
+Examples target **tpy-lang 0.6.1**, the release whose `v0.6.1` tag is pinned as
+the `.verify/tpy` submodule. Between releases the submodule may pin a
+pre-release commit instead; the submodule pointer is the only record of that
+commit, so do not repeat the hash in prose. When the compiler moves, move the
+submodule; if the version changes too, update it here and in `README.md` — the
+Requirements bullet and, on a release, both `pip install` blocks (a pre-release
+installs from the submodule instead). `make test` fails while the compiler and
+the docs disagree.
 
 ## Local setup
 
@@ -59,8 +64,8 @@ complete step 7, so the example cannot be published.
 1. Copy the original from `tmp/shedskin/examples/<name>/` into `shedskin/<name>/`,
    along with any data files it reads from `../testdata/`.
 2. Fix the data-file paths to be local — each example is self-contained.
-3. Get it compiling with `tpy <name>.py` — the unoptimized build is quicker to
-   iterate on. See **Fidelity where it doesn't hurt** below for how far to go.
+3. Get it compiling with `tpy --debug <name>.py` — the unoptimized build is
+   quicker to iterate on. See **Fidelity where it doesn't hurt** below for how far to go.
 4. Verify the port against the original. This is done once, here, and it is what
    makes the output recorded in step 7 worth anything: the harness can only
    replay what tpy did, it cannot tell a faithful port from a plausible-looking
@@ -72,7 +77,7 @@ complete step 7, so the example cannot be published.
    output with the port's:
 
    ```bash
-   tpy -O <name>.py
+   tpy <name>.py
    python3 tmp/shedskin/examples/<name>/<name>.py
    ```
 
@@ -86,7 +91,7 @@ complete step 7, so the example cannot be published.
    later). Works only while the port stays ordinary Python plus annotations:
 
    ```bash
-   tpy -O <name>.py
+   tpy <name>.py
    PYTHONPATH=$(git rev-parse --show-toplevel)/.verify/tpy/lib/cpy python3 <name>.py
    ```
 
@@ -132,9 +137,28 @@ files appear, in what order, under what label is decided by `ORDER` in that
 repository's `build_examples.py` — adding a file here does not put it on the
 page. See `landing/README.md`.
 
+## The original categories: `basics/`, `tplib/`, `programs/`
+
+Programs written for this repository rather than ported. They are verified by the
+fallback route in step 4 (the port itself under CPython with the stubs), except
+where a program has no CPython counterpart — a `tplib`-only API, a server that
+needs a peer — in which case the README says how it was checked instead.
+
+- `basics/` — single files, no arguments, no data files, no website line limit.
+  Plain Python plus the annotations TurboPython needs, nothing clever.
+- `tplib/` — single files, one type or module each, with the expected result in a
+  comment next to each print. Client/server pairs are `build_only` in the harness.
+- `programs/` — applications, laid out like `shedskin/`: `<name>/<name>.py` plus a
+  README with **Run**, **What it shows** and **Verification** sections. The
+  "TurboPython bugs worked around" section applies here too.
+
+New files in `basics/` and `tplib/` go in the category's README table.
+
 ## Hard rules
 
-The rules in this section govern `shedskin/`; `landing/` is covered above.
+The rules in this section govern `shedskin/`; the other categories are covered
+above, and the rules on publishing only working examples, on labelling workarounds
+and on never putting benchmark numbers in a README apply everywhere.
 
 **Fidelity where it doesn't hurt.** Prefer the original wording when the cost is an
 annotation or a small equivalent substitution — that is the common case, and it is
@@ -176,9 +200,14 @@ the other modules' names alone.
 **Keep timing scaffolding.** Most originals print elapsed time; leave it in and
 normalize it away when comparing output. Do not delete it.
 
-**Workarounds are temporary and must be labelled.** If a TurboPython bug forces a
-deviation, say so in the example's README with a link to the upstream issue, so it
-can be reverted when the compiler is fixed.
+**Workarounds are temporary and must be labelled.** If a TurboPython bug, or a
+missing piece of Python, forces a deviation, list it under **TurboPython bugs
+worked around** in the example's README, so it can be reverted when the compiler
+is fixed. That section is for anything that stopped the port from using a feature
+the original uses; genuine TurboPython idioms (ownership, annotations, `int32`)
+stay under **Changes from the original**. Point at the upstream issue if there is
+one; tpy-lang tracks bugs in its `BUGS.md` and gaps in its `TODO.md`, so name the
+entry there, or say "not filed upstream yet".
 
 **Never put speedup or benchmark numbers in a README.** The rationale, and the plan
 for lifting this, are in `TODO.md`.
@@ -207,12 +236,14 @@ Attribution and license, verbatim from the source header:
 
 ## TurboPython bugs worked around
 
-- <deviation> — <upstream issue link>, revert once fixed.
+- **<what could not be used>** — <how the port works around it>. <Tracked in
+  tpy-lang's `BUGS.md`/`TODO.md` ("<entry title>") | Not filed upstream yet>;
+  revert once fixed.
 
 (Omit this section if there were none.)
 ```
 
-Add a **Run** section only if the example needs more than `tpy -O <name>.py` — extra
+Add a **Run** section only if the example needs more than `tpy <name>.py` — extra
 setup, downloaded assets, a system library. Otherwise the convention in
 `README.md` covers it.
 

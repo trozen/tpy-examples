@@ -4,9 +4,9 @@ A gallery of example programs for [TurboPython](https://tpy-lang.org) (`tpy`) �
 compiler that translates Python to C++.
 
 Most are real programs someone wrote to get a job done, ported to build and run with
-`tpy`; a smaller set is written here to show one part of the language at a time. The
-point is to show what TurboPython does with ordinary code, not to exercise the
-compiler with synthetic tests.
+`tpy`; the rest are written here, to show one part of the language or library at a
+time or as applications of their own. The point is to show what TurboPython does with
+ordinary code, not to exercise the compiler with synthetic tests.
 
 ## Examples
 
@@ -16,31 +16,34 @@ compiler with synthetic tests.
 - [`landing/`](landing/README.md) — the short single-file programs shown in the
   code window on [tpy-lang.org](https://tpy-lang.org), each demonstrating one
   part of the language. Written for this project, MIT.
+- [`basics/`](basics/README.md) — small single-file programs to run first: hello,
+  a Brainfuck interpreter, Game of Life, an ASCII Mandelbrot. MIT.
+- [`tplib/`](tplib/README.md) — walkthroughs of the library, one type or module
+  per file: the `tplib` containers, sockets and asyncio. MIT.
+- [`programs/`](programs/README.md) — original applications with a command line
+  and a job to do, one directory each, starting with a curl-like HTTP client. MIT.
 
-The first batch is still being ported, so the gallery is small for now. Examples are
-added in small batches, and one appears only once it fully works: it compiles, runs
-to completion, and matches CPython's output wherever CPython can run it. Examples
-still waiting on compiler work are listed in [TODO.md](TODO.md).
-
-More categories will follow, including original TurboPython examples with no Shed
-Skin counterpart — starting with CPython extension modules written in TurboPython.
+The gallery is still small. Examples are added in small batches, and one appears
+only once it fully works: it compiles, runs to completion, and matches CPython's
+output wherever CPython can run it. Examples still waiting on compiler work are
+listed in [TODO.md](TODO.md).
 
 ## Requirements
 
 - Linux or macOS
 - Python 3.12+
-- `tpy-lang` 0.5.1 — the version these examples target
+- `tpy-lang` 0.6.1 — the version these examples target
 - A C++23 compiler: g++ 13+ or clang++ 19+ — or none, if you use the bundled zig
   toolchain below
 
 ```bash
-pip install "tpy-lang==0.5.1"          # or: uv tool install "tpy-lang==0.5.1"
+pip install "tpy-lang~=0.6.1"          # or: uv tool install "tpy-lang~=0.6.1"
 ```
 
 If you don't have a suitable C++ compiler, install the bundled zig toolchain instead:
 
 ```bash
-pip install "tpy-lang[bundled]==0.5.1" # or: uv tool install "tpy-lang[bundled]==0.5.1"
+pip install "tpy-lang[bundled]~=0.6.1" # or: uv tool install "tpy-lang[bundled]~=0.6.1"
 ```
 
 See [tpy-lang.org](https://tpy-lang.org) for full installation instructions and the
@@ -54,21 +57,18 @@ data files it reads:
 ```bash
 git clone https://github.com/trozen/tpy-examples
 cd tpy-examples/shedskin/<example-name>
-tpy -O <example-name>.py
+tpy <example-name>.py
 ```
 
 `tpy` compiles the program to a native binary and runs it. The entry point is always
-`<example-name>.py`. Examples needing extra setup say so in their own README. The
-programs in [`landing/`](landing/README.md) are single files rather than
-directories, run the same way from inside `landing/`.
+`<example-name>.py`, and `programs/` follows the same layout. Examples needing extra
+setup say so in their own README. `landing/`, `basics/` and `tplib/` hold single
+files rather than directories, run the same way from inside their directory.
 
-Use `-O` to see what TurboPython actually does — it is roughly 3x faster than the
-default unoptimized build, which exists for quick edit-run cycles.
-
-Useful flags:
+The build is optimized by default. Useful flags:
 
 ```bash
-tpy <example-name>.py             # unoptimized: builds faster, runs slower
+tpy --debug <example-name>.py     # unoptimized, with debug info: builds faster
 tpy --dump-code <example-name>.py # inspect the generated C++
 ```
 
@@ -76,7 +76,7 @@ tpy --dump-code <example-name>.py # inspect the generated C++
 
 Sources stay valid Python, so your editor and type checker still understand them.
 But a ported example is not a drop-in CPython script: it imports TurboPython types
-such as `Int32`, and a few bind native libraries directly, which has no CPython
+such as `int32`, and a few bind native libraries directly, which has no CPython
 equivalent.
 
 Both running an example under CPython and resolving its imports for a type checker
@@ -114,5 +114,5 @@ dispatching through a `@dynamic` protocol.
   as-is. **Check the individual example before reusing it.** See
   [shedskin/README.md](shedskin/README.md).
 - **Everything else** — MIT, see [LICENSE](LICENSE). That covers everything this
-  repository authors: the READMEs, any scripts, and original examples added later.
-  Copy it freely.
+  repository authors: the original examples in `landing/`, `basics/`, `tplib/` and
+  `programs/`, the READMEs, and the harness. Copy it freely.

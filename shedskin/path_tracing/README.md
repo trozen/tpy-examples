@@ -5,15 +5,15 @@ sphere to a PPM image. ~409 lines.
 
 ![The Cornell box rendered by this example](path_tracing.png)
 
-*`tpy -O path_tracing.py 10000`. Plain `tpy -O path_tracing.py` runs the
+*`tpy path_tracing.py 10000`. Plain `tpy path_tracing.py` runs the
 original's benchmark instead, at ten samples per pixel — far grainier.*
 
 ## Run
 
 ```bash
-tpy -O path_tracing.py            # the original's timing run: ten renders at
-                                  # ten samples per pixel, seeds 0..9
-tpy -O path_tracing.py 2000       # one render at 2000 samples per pixel
+tpy path_tracing.py         # the original's timing run: ten renders at
+                            # ten samples per pixel, seeds 0..9
+tpy path_tracing.py 2000    # one render at 2000 samples per pixel
 ```
 
 Each sample per pixel is one ray traced through a randomly jittered point,
@@ -119,24 +119,18 @@ from `self.scene` rather than from the `scene` parameter, which has already
 been moved from, and `iterate()` reads `self.scene` directly instead of
 aliasing it into a local first.
 
-**`Int32(x * 255)` rather than `int(x * 255)`.** In TurboPython `int` is
+**`int32(x * 255)` rather than `int(x * 255)`.** In TurboPython `int` is
 arbitrary-precision, so `int()` would allocate a BigInt for every colour
 channel of every pixel.
 
 **Smaller substitutions.**
 
-- `float("inf")` → `math.inf`.
-- `%`-formatting → f-strings; TurboPython has no printf-style `%` operator.
-- `class V3(object)` → `class V3`; `object` is not a base class here.
 - `super(Chrome, self).__init__(...)` → `super().__init__(...)`; only the
   Python 3 zero-argument form is accepted.
-- `v2` and `v2_dot` in `getRandomNormalInHemisphere` are initialised before
-  the `while True` loop that assigns them — locals are function-scoped and
-  must be definitely assigned.
 - The driver loop at module scope moved into an `if __name__ == '__main__':`
-  block, with `t0` initialised before the loop that conditionally reassigns
-  it.
-- `ITERATIONS` gained a `Final[Int32]` annotation.
+  block, with `t0` initialised before the loop. The original assigns it only
+  at `n == 5`, which the compiler cannot prove is always reached.
+- `ITERATIONS` gained a `Final[int32]` annotation.
 
 **Added: a sample count on the command line.** `main()` takes its sample
 count as an argument rather than reading the `ITERATIONS` global, and with no
@@ -156,8 +150,17 @@ source.
   `V3(random() * 2.0 - 1.0, random() * 2.0 - 1.0, random() * 2.0 - 1.0)`
   consumed three draws backwards and every pixel came out different. The three
   draws are hoisted into separate statements in
-  `getRandomNormalInHemisphere`; fold them back into the call once the
-  compiler sequences arguments left-to-right.
+  `getRandomNormalInHemisphere`. Tracked in tpy-lang's `BUGS.md`
+  ("Subexpressions evaluate RIGHT-TO-LEFT"); fold them back into the call once
+  the compiler sequences arguments left-to-right.
+
+- **No printf-style `%` formatting on `str`.** The `TIME` lines became
+  f-strings. Tracked in tpy-lang's `TODO.md` ("printf-style `%` formatting
+  on `str`").
+
+- **`class V3(object)` is rejected** with `Unknown type: object`, so it is
+  `class V3`. Tracked in tpy-lang's `TODO.md` ("`object` and `type` as
+  annotation types").
 
 ## Verification
 

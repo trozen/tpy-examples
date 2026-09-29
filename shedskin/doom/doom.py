@@ -2,7 +2,7 @@ import math
 import sys
 import time
 
-from tpy import Int32
+from tpy import int32
 
 import pygame
 
@@ -46,7 +46,7 @@ def move_player(angle: float, accel: float, strafe: float,
     return (vx2, vy2)
 
 
-def dump(wad: str, frames: Int32, path: str) -> None:
+def dump(wad: str, frames: int32, path: str) -> None:
     """Render headlessly and write the raw paletted framebuffer.
 
     No window, no SDL: this is what the example is verified with, since the
@@ -61,7 +61,7 @@ def dump(wad: str, frames: Int32, path: str) -> None:
 
     checksum = 0
     for i in range(len(buf)):
-        checksum = (checksum * 31 + Int32(buf[i])) & 0xffffff
+        checksum = (checksum * 31 + int32(buf[i])) & 0xffffff
     print(f'frames {frames} checksum {checksum}')
 
     out = open(path, 'wb')
@@ -179,7 +179,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if len(argv) > 1 and argv[0] == 'dump':
-        dump(wad, Int32(int(argv[1])), 'frame.raw')
+        dump(wad, int32(int(argv[1])), 'frame.raw')
     elif len(argv) > 0 and argv[0] == 'test':
         main(wad, True)
     else:

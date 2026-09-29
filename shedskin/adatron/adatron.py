@@ -6,7 +6,7 @@
 from math import exp
 import time
 
-from tpy import Int32, Own
+from tpy import int32, Own
 
 CYTOSOLIC = 0
 EXTRACELLULAR = 1
@@ -28,12 +28,12 @@ class Protein:
     isoelectric_point: str
     size: str
     sequence: str
-    type: Int32
+    type: int32
     local_composition: dict[str, float]
     global_composition: dict[str, float]
 
     def __init__(self, name: str, mass: str, isoelectric_point: str, size: str,
-                 sequence: str, type: Int32) -> None:
+                 sequence: str, type: int32) -> None:
         self.name = name
         self.mass = mass
         self.isoelectric_point = isoelectric_point
@@ -52,15 +52,20 @@ class Protein:
 
     def create_vector(self) -> Own[list[float]]:
         vector = []
-        for key in sorted(self.local_composition.keys()):
-            value = self.local_composition[key]
+        # BUG: the second loop appends the last local-composition value once per
+        # global key instead of self.global_composition[key]. That is how the
+        # original is written, and it is kept so the output matches it; the
+        # initializer only gives `value` a binding on every path, since TPy
+        # cannot prove the first loop runs.
+        value = 0.0
+        for key, value in sorted(self.local_composition.items()):
             vector.append(value)
         for key in sorted(self.global_composition.keys()):
             vector.append(value)
         return vector
 
 
-def load_file(filename: str, type: Int32) -> None:
+def load_file(filename: str, type: int32) -> None:
     global PROTEINS
     protfile = open(filename)
     for line in protfile.readlines():
@@ -74,7 +79,7 @@ def load_file(filename: str, type: Int32) -> None:
     protfile.close()
 
 
-def create_tables() -> tuple[Own[list[list[float]]], Own[list[list[Int32]]]]:
+def create_tables() -> tuple[Own[list[list[float]]], Own[list[list[int32]]]]:
     """Create the feature and label tables."""
     feature_table = []
     label_table = []
@@ -85,7 +90,7 @@ def create_tables() -> tuple[Own[list[list[float]]], Own[list[list[Int32]]]]:
     for protein in PROTEINS:
         if protein.type == BLIND:
             continue
-        labels: list[Int32] = [-1] * 4
+        labels: list[int32] = [-1] * 4
         # Invert the sign of the label our protein belongs to.
         labels[protein.type] *= -1
         label_table.append(labels)
@@ -106,14 +111,14 @@ def create_kernel_table(feature_table: list[list[float]]) -> Own[list[list[float
     return kernel_table
 
 
-def train_adatron(kernel_table: list[list[float]], label_table: list[list[Int32]],
+def train_adatron(kernel_table: list[list[float]], label_table: list[list[int32]],
                   h: float, c: float) -> tuple[Own[list[list[float]]], Own[list[float]]]:
     tolerance = 0.5
     alphas: list[list[float]] = [([0.0] * len(kernel_table)) for _ in range(len(label_table[0]))]
     betas: list[list[float]] = [([0.0] * len(kernel_table)) for _ in range(len(label_table[0]))]
     bias: list[float] = [0.0] * len(label_table[0])
     labelalphas: list[float] = [0.0] * len(kernel_table)
-    max_differences: list[tuple[float, Int32]] = [(0.0, 0)] * len(label_table[0])
+    max_differences: list[tuple[float, int32]] = [(0.0, 0)] * len(label_table[0])
     for iteration in range(10*len(kernel_table)):
         print(f"Starting iteration {iteration}...")
         if iteration == 20: # XXX shedskin test
@@ -146,7 +151,7 @@ def train_adatron(kernel_table: list[list[float]], label_table: list[list[Int32]
     return alphas, bias
 
 def calculate_error(alphas: list[list[float]], bias: list[float],
-                    kernel_table: list[list[float]], label_table: list[list[Int32]]) -> float:
+                    kernel_table: list[list[float]], label_table: list[list[int32]]) -> float:
     prediction = 0.0
     predictions: list[list[float]] = [([0.0] * len(kernel_table)) for _ in range(len(label_table[0]))]
     for klass in range(len(label_table[0])):
@@ -197,6 +202,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    t0 = 0.0
     for n in range(10):
         if n == 5:
             t0 = time.time()  # pypy has stabilized

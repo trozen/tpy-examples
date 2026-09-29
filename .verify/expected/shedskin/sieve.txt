@@ -1,0 +1,71 @@
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+n: 10000000
+Sieve of Atkin
+nprimes: 664579
+time: <elapsed>
+Sieve of Eratostenes
+nprimes: 664579
+time: <elapsed>
+TIME <elapsed>

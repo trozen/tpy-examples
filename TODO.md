@@ -17,7 +17,8 @@ supports well today.
 - [ ] `dijkstra2` — blocked, see below. Preserved on `wip/dijkstra2`.
 - [ ] `rubik2` — blocked, see below. Preserved on `wip/rubik2`.
 - [x] `ant` — 147 lines, `random`, `time`. Ant Colony Optimization for TSP.
-- [ ] `sieve` — see note below.
+- [x] `sieve` — 120 lines, `math`, `time`. Two prime sieves; the extended slice
+      assignment that blocked it works now.
 
 ## Later
 
@@ -36,8 +37,15 @@ supports well today.
       systematically on one machine; ad-hoc laptop numbers age badly.
 - [ ] Decide whether the `pygame` shim becomes shared repo infrastructure, or moves
       upstream into tpy-lang proper. Revisit at the second GUI example.
-- [ ] Original TurboPython examples as a sibling category — starting with writing
-      CPython extension modules in TurboPython.
+- [x] Original TurboPython examples as sibling categories: `basics/` (small single
+      files), `tplib/` (library walkthroughs) and `programs/` (applications), seeded
+      from the tpy-lang checkout's `examples/`.
+- [ ] CPython extension modules written in TurboPython, as a `programs/` entry.
+- [ ] `programs/tte`: more of TerminalTextEffects' effects, if wanted; the ones
+      left are the less showy ones (binarypath, bouncyballs, bubbles,
+      colorshift, errorcorrect, middleout, orbittingvolley, overflow, pour,
+      rain, random_sequence, scattered, slice, slide, smoke, spray, sweep,
+      synthgrid, unstable, waves).
 
 ## Blocked on compiler gaps
 
@@ -56,14 +64,22 @@ against tpy-lang.
 - `collatz` — builds its lookup tables with self-assigning comprehensions
   (`lookup_c = [c + (i%2) for (i, c) in zip(lookup_multistep, lookup_c)]`). That form
   emits invalid C++ (`&*` applied to a value-typed slot), so it cannot be ported
-  without restructuring. Int64 annotations were otherwise sufficient.
-- `sieve` — uses extended slice assignment (`sieve[bottom::si] = ...`) and mutates
-  the list it is iterating; also assigns `n` inside a loop then reuses it as a
-  function-level loop variable.
+  without restructuring. int64 annotations were otherwise sufficient.
 - `minpng` — needs `struct.pack`; only `unpack`/`calcsize` are implemented.
 - `brainfuck` — does `from sys import stdin` and `stdin.read(1)`; `sys.stdin` is
   Missing ("needs read-side protocol"). Was in the first batch until the roadmap was
   checked properly.
+
+## To file against tpy-lang
+
+Compiler bugs and gaps found while writing examples, not yet in tpy-lang's
+`BUGS.md` or `TODO.md`. Each is worked around in the example named, and listed
+in that example's README; file them, then revert the workaround once fixed.
+
+Nothing outstanding: everything found so far has an upstream entry, named in the
+README of the example that works around it. The exception is the list of
+smaller code-generator gaps in `programs/tte`'s README, most of which were never
+filed one by one.
 
 ## Conventions
 
