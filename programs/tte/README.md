@@ -243,8 +243,8 @@ the rest of the surface darkens away.
   through a list element either, so `Character` has small methods
   (`move_to`, `return_home`, `set_symbol`, `set_scene_ease`) that the
   effects call instead. Tracked in tpy-lang's `BUGS.md`
-  (`valuetype-field-read-rejects-family`, `deep-field-chain-at-record-arg`,
-  `nested-field-target-container-write`).
+  (`valuetype-list-elem-field-call-arg-rejects`,
+  `deep-field-chain-at-record-arg`, `nested-field-target-container-write`).
 - **`list.sort(key=...)` is missing, and a `sorted(key=lambda ...)` that
   captures `self` is refused.** `Terminal.characters()` and `grouped()` sort
   `(key, ..., id)` tuples. Tracked in tpy-lang's `TODO.md` ("`key=` keyword
@@ -302,9 +302,6 @@ the rest of the surface darkens away.
   - a method call's result used directly as an argument
   - a local alias of a record field (`canvas = self.term.canvas`)
   - a field of a temporary (`Gradient(...).spectrum`)
-  - comparing with an element of an unannotated global list of floats, which
-    compiles once the list is annotated `list[float]` (spawn's
-    `FLAME_FLICKER`)
   - `x.f and x.f not in names`, testing a field inside `and`
   - a conditional expression, or a method's list result, assigned to a field
     in `__init__`
@@ -313,8 +310,7 @@ the rest of the surface darkens away.
   have moved, so matrix pops its columns off instead. Of these, tpy-lang's
   `BUGS.md` tracks the discarded `list.pop(i)`
   (`list-pop-discarded-result-rejects`), the tuple `list.pop()` returns
-  (`pop-result-tuple-subscript-rejects`), the unannotated float list
-  (`unannotated-global-float-list-subscript`) and `own_iter()`
+  (`pop-result-tuple-subscript-rejects`) and `own_iter()`
   (`own-iter-spurious-copy-warning`); the rest are not filed upstream yet.
 
 ## Verification

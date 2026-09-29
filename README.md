@@ -32,22 +32,18 @@ listed in [TODO.md](TODO.md).
 
 - Linux or macOS
 - Python 3.12+
-- `tpy-lang` 0.6.0.dev0 — a pre-release; these examples target the
-  tpy-lang commit pinned as the `.verify/tpy` submodule
+- `tpy-lang` 0.6.1 — the version these examples target
 - A C++23 compiler: g++ 13+ or clang++ 19+ — or none, if you use the bundled zig
   toolchain below
 
-The pre-release is not on PyPI, so install it from the submodule:
-
 ```bash
-git submodule update --init .verify/tpy
-pip install .verify/tpy                # or: uv tool install .verify/tpy
+pip install "tpy-lang~=0.6.1"          # or: uv tool install "tpy-lang~=0.6.1"
 ```
 
 If you don't have a suitable C++ compiler, install the bundled zig toolchain instead:
 
 ```bash
-pip install ".verify/tpy[bundled]"     # or: uv tool install ".verify/tpy[bundled]"
+pip install "tpy-lang[bundled]~=0.6.1" # or: uv tool install "tpy-lang[bundled]~=0.6.1"
 ```
 
 See [tpy-lang.org](https://tpy-lang.org) for full installation instructions and the

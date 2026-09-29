@@ -3,11 +3,12 @@
 CLAUDE.md lists the places to update on a version bump; this makes forgetting
 one a failing test rather than a stale README.
 
-A release pins a tag and the docs name a PyPI version. A pre-release (a
-`.devN` version) pins a commit instead, and the docs install from the submodule
-because the pre-release is not on PyPI. They do not name the commit: the
-submodule pointer already records it, and every version string is shared by
-many pre-release commits anyway.
+A release pins a tag and the docs name a PyPI version: either exactly, or as a
+compatible release (`~=0.6.0`, any 0.6.x from 0.6.0 up) so patch releases need
+no edit. A pre-release (a `.devN` version) pins a commit instead, and the docs
+install from the submodule because the pre-release is not on PyPI. They do not
+name the commit: the submodule pointer already records it, and every version
+string is shared by many pre-release commits anyway.
 """
 from __future__ import annotations
 
@@ -16,8 +17,8 @@ from dataclasses import dataclass
 
 from conftest import REPO_ROOT, tpy
 
-# `pip install "tpy-lang==0.5.1"`, `"tpy-lang[bundled]==0.5.1"`, ...
-_INSTALL_PIN = re.compile(r"tpy-lang(?:\[\w+\])?==(\S+?)\"")
+# `pip install "tpy-lang==0.5.1"`, `"tpy-lang[bundled]~=0.6.0"`, ...
+_INSTALL_PIN = re.compile(r"tpy-lang(?:\[\w+\])?(==|~=)(\S+?)\"")
 # `pip install .verify/tpy`, `".verify/tpy[bundled]"`, ...
 _INSTALL_SUBMODULE = re.compile(r"pip install \"?\.verify/tpy")
 
@@ -60,7 +61,20 @@ def test_readme_matches_pinned_compiler():
         assert _INSTALL_SUBMODULE.search(readme), "no `pip install .verify/tpy` line in README.md"
     else:
         assert installs, "no `pip install \"tpy-lang==...\"` line in README.md"
-        assert set(installs) == {pin.version}, f"README.md install lines pin {sorted(set(installs))}"
+        for op, spec in installs:
+            assert _admits(op, spec, pin.version), (
+                f"README.md installs tpy-lang{op}{spec}, which does not select {pin.version}"
+            )
+
+
+def _admits(op: str, spec: str, version: str) -> bool:
+    """Whether `tpy-lang<op><spec>` picks the pinned version: `==` exactly, `~=`
+    anything from `spec` up within its release series (`~=0.6.0` is 0.6.x)."""
+    if op == "==":
+        return spec == version
+    want = tuple(int(p) for p in spec.split("."))
+    have = tuple(int(p) for p in version.split("."))
+    return have >= want and have[:len(want) - 1] == want[:-1]
 
 
 def test_claude_md_matches_pinned_compiler():

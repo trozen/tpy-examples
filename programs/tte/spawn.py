@@ -16,7 +16,7 @@ from graphics import Color, Gradient, choose_color, hex_color, hex_colors, shift
 
 FLAME_COLORS = ["ffffff", "c8e6ff", "6fb1ff", "2f5fd0"]  # core to the tips
 FLAME_SYMBOLS = ["█", "▓", "▒", "░"]
-FLAME_FLICKER: list[float] = [0.15, 0.3, 0.5, 0.7]  # per shell: how often a cell shows a plasma glyph
+FLAME_FLICKER = [0.15, 0.3, 0.5, 0.7]  # per shell: how often a cell shows a plasma glyph
 SPARK_SYMBOLS = ["*", "+", "·", "°"]
 SPARK_COLOR = "8cc4ff"
 SECTORS = 32  # directions around the center, each with its own flame length
