@@ -61,10 +61,6 @@ against tpy-lang.
 - `rsync` — needs `hashlib` beyond SHA-256 (currently ~20%).
 - `othello`, `othello2` — need `sys.stdin` and `input()` for their interactive
   and UGI modes. Unreachable branches still have to typecheck.
-- `collatz` — builds its lookup tables with self-assigning comprehensions
-  (`lookup_c = [c + (i%2) for (i, c) in zip(lookup_multistep, lookup_c)]`). That form
-  emits invalid C++ (`&*` applied to a value-typed slot), so it cannot be ported
-  without restructuring. int64 annotations were otherwise sufficient.
 - `minpng` — needs `struct.pack`; only `unpack`/`calcsize` are implemented.
 - `brainfuck` — does `from sys import stdin` and `stdin.read(1)`; `sys.stdin` is
   Missing ("needs read-side protocol"). Was in the first batch until the roadmap was
@@ -76,7 +72,12 @@ Compiler bugs and gaps found while writing examples, not yet in tpy-lang's
 `BUGS.md` or `TODO.md`. Each is worked around in the example named, and listed
 in that example's README; file them, then revert the workaround once fixed.
 
-Nothing outstanding: everything found so far has an upstream entry, named in the
+Nothing outstanding. collatz's two list gaps went to the tpy-lang release
+session on 2026-09-29 and are filed as
+`prebound-list-rebound-in-loop-from-comprehension`, together with a proposal to
+allow lossless `int32` -> `int64` widening, which would drop most of collatz's
+`int64(...)` conversions (recorded on tpy-lang's "Sub-default-int arithmetic"
+decision entry). Everything found so far has an upstream entry, named in the
 README of the example that works around it. The exception is the list of
 smaller code-generator gaps in `programs/tte`'s README, most of which were never
 filed one by one.

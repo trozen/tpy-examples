@@ -37,8 +37,10 @@ CONFIG_KEYS = {"args", "build_only", "output_files"}
 # The programs print their elapsed time; that is the one line that may differ
 # between runs (see CLAUDE.md, "Keep timing scaffolding"). Most spell it
 # `TIME 1.23`, the sieve also prints a `time: 1.23` per run, and basics/mandelbrot
-# prints unrounded milliseconds.
+# prints unrounded milliseconds. collatz prints a rate derived from the elapsed
+# time, `123.45 numbers/second`, which varies the same way.
 _TIME_LINE = re.compile(r"^(TIME|time:|elapsed\[ms\]:) [0-9.e+-]+$", re.MULTILINE)
+_RATE_LINE = re.compile(r"^[0-9.e+-]+ (numbers/second)$", re.MULTILINE)
 
 # Where the examples live, and how each category is laid out: "dirs" is one
 # directory per example with the entry point at <name>/<name>.py, "files" is
@@ -122,7 +124,7 @@ EXAMPLES = discover()
 
 
 def normalize(stdout: str) -> str:
-    return _TIME_LINE.sub(r"\1 <elapsed>", stdout)
+    return _RATE_LINE.sub(r"<elapsed> \1", _TIME_LINE.sub(r"\1 <elapsed>", stdout))
 
 
 def tpy(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:

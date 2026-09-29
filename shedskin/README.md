@@ -37,6 +37,7 @@ Examples are added in small batches, and appear here only once they fully work.
 | --- | ------- | ----------- | ----- |
 | | [adatron](adatron/) | Adatron SVM with a polynomial kernel | 203 |
 | | [ant](ant/) | Ant Colony Optimization for the Travelling Salesman Problem | 175 |
+| | [collatz](collatz/) | Collatz (3x+1) delay records, using multistep lookup tables | 102 |
 | <img src="doom/images/doom.png" height="90"> | [doom](doom/) | DOOM WAD renderer, drawn with SDL2 | 1496 |
 | <img src="mandelbrot/images/mandelbrot.png" height="90"> | [mandelbrot](mandelbrot/) | The Mandelbrot set rendered as ASCII art | 43 |
 | <img src="oliva2/images/oliva2.png" height="90"> | [oliva2](oliva2/) | Sea-shell pigmentation patterns, written as a PGM image | 159 |
