@@ -30,7 +30,7 @@ When writing or modifying `.py` files compiled by tpy:
 tpy --install-agent-docs docs/
 ```
 
-Examples target **tpy-lang 0.6.1**, the release whose `v0.6.1` tag is pinned as
+Examples target **tpy-lang 0.6.2**, the release whose `v0.6.2` tag is pinned as
 the `.verify/tpy` submodule. Between releases the submodule may pin a
 pre-release commit instead; the submodule pointer is the only record of that
 commit, so do not repeat the hash in prose. When the compiler moves, move the

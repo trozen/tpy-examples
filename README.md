@@ -32,18 +32,18 @@ listed in [TODO.md](TODO.md).
 
 - Linux or macOS
 - Python 3.12+
-- `tpy-lang` 0.6.1 — the version these examples target
+- `tpy-lang` 0.6.2 — the version these examples target
 - A C++23 compiler: g++ 13+ or clang++ 19+ — or none, if you use the bundled zig
   toolchain below
 
 ```bash
-pip install "tpy-lang~=0.6.1"          # or: uv tool install "tpy-lang~=0.6.1"
+pip install "tpy-lang~=0.6.2"          # or: uv tool install "tpy-lang~=0.6.2"
 ```
 
 If you don't have a suitable C++ compiler, install the bundled zig toolchain instead:
 
 ```bash
-pip install "tpy-lang[bundled]~=0.6.1" # or: uv tool install "tpy-lang[bundled]~=0.6.1"
+pip install "tpy-lang[bundled]~=0.6.2" # or: uv tool install "tpy-lang[bundled]~=0.6.2"
 ```
 
 See [tpy-lang.org](https://tpy-lang.org) for full installation instructions and the
