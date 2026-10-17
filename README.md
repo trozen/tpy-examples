@@ -1,7 +1,7 @@
 # TurboPython Examples
 
 A gallery of example programs for [TurboPython](https://tpy-lang.org) (`tpy`) — a
-compiler that translates Python to C++.
+high-performance dialect of Python, compiled to C++.
 
 Most are real programs someone wrote to get a job done, ported to build and run with
 `tpy`; the rest are written here, to show one part of the language or library at a
