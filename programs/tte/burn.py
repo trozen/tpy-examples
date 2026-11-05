@@ -5,7 +5,7 @@ import random
 
 from tpy import int32, Own
 
-from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
+from engine import EventKind, ParticlePool, Path, Scene, Terminal
 from geometry import Coord
 from graphics import Direction, Gradient, hex_color, hex_colors
 from spanningtree import prims_order
@@ -76,7 +76,7 @@ class Burn:
         character.move_to(origin)
         character.scenes[0].reset()
         rise = Path(0.5)
-        column = randint(origin.column - 4, origin.column + 4)
+        column = random.randint(origin.column - 4, origin.column + 4)
         rise.add_waypoint(Coord(column, self.term.canvas.top + 1))
         character.activate_path(character.add_path("rise", rise))
         character.activate_scene("smoke")
@@ -86,7 +86,7 @@ class Burn:
     def step(self) -> bool:
         if not self.link_order and not self.term.has_active():
             return False
-        for _ in range(randint(2, 4)):
+        for _ in range(random.randint(2, 4)):
             if self.link_order:
                 char_id = self.link_order.pop(0)
                 if self.term.chars[char_id].is_fill:

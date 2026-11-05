@@ -12,7 +12,7 @@ def sieveOfAtkin(end: int) -> Own[list[int]]:
     lng = ((end // 2) - 1 + end % 2)
     sieve = [False] * (lng + 1)
 
-    x_max, x2, xd = int(sqrt((end-1)/4.0)), int(0), int(4)
+    x_max, x2, xd = int(sqrt((end-1)/4.0)), 0, 4
     for xd in range(4, 8*x_max + 2, 8):
         x2 += xd
         y_max = int(sqrt(end-x2))

@@ -1,13 +1,16 @@
 import math
 import time
+from typing import Final
 
 WIDTH = 100
 HEIGHT = 50
 MAX_ITER = 1000
 
 # Mandelbrot set bounds
-X_MIN, X_MAX = -2.5, 1.0
-Y_MIN, Y_MAX = -1.25, 1.25
+X_MIN: Final[float] = -2.5
+X_MAX: Final[float] = 1.0
+Y_MIN: Final[float] = -1.25
+Y_MAX: Final[float] = 1.25
 
 # ASCII gradient from dark to light
 CHARS = " .,:;+*?%S#@"

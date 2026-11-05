@@ -68,7 +68,7 @@ class Protein:
 def load_file(filename: str, type: int32) -> None:
     global PROTEINS
     protfile = open(filename)
-    for line in protfile.readlines():
+    for line in protfile:
         if line.startswith("name"):
             continue
         fields = line.strip().split("\t")
@@ -167,9 +167,7 @@ def calculate_error(alphas: list[list[float]], bias: list[float],
         for row_counter in range(len(label_table[0])):
             current_predictions.append(predictions[row_counter][col_counter])
 
-        # max(iterable) is not available in TurboPython; sorted(...)[-1] is
-        # the same value.
-        predicted_class = current_predictions.index(sorted(current_predictions)[-1])
+        predicted_class = current_predictions.index(max(current_predictions))
 
         if label_table[col_counter][predicted_class] < 0:
             error += 1

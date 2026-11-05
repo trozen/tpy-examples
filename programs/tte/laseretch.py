@@ -6,7 +6,7 @@ import random
 from tpy import int32, Own
 
 from easing import out_sine
-from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
+from engine import EventKind, ParticlePool, Path, Scene, Terminal
 from geometry import Coord
 from graphics import Direction, Gradient, hex_color, hex_colors
 from spanningtree import recursive_backtracker_order
@@ -101,9 +101,9 @@ class LaserEtch:
         character.move_to(self.position)
         fall = Path(0.3)
         fall.ease = out_sine
-        target = Coord(randint(self.position.column - 20, self.position.column + 20),
+        target = Coord(random.randint(self.position.column - 20, self.position.column + 20),
                        self.term.canvas.bottom)
-        control = Coord(target.column, self.position.row + randint(-10, 20))
+        control = Coord(target.column, self.position.row + random.randint(-10, 20))
         fall.add_curved_waypoint(target, control)
         character.activate_path(character.add_path("fall", fall))
         character.activate_scene("spark")
@@ -123,8 +123,7 @@ class LaserEtch:
                     char_id = self.pending.pop(0)
                 self.term.set_visible(char_id, True)
                 self.term.activate(char_id)
-                target = self.term.chars[char_id].input_coord
-                self.reposition(target)
+                self.reposition(self.term.chars[char_id].input_coord)
             self.char_delay = ETCH_DELAY
         else:
             self.char_delay -= 1

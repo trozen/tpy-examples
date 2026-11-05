@@ -6,7 +6,7 @@ import random
 from tpy import int32, Own
 
 from easing import in_cubic, in_expo, in_out_sine, out_expo
-from engine import EventKind, Path, Scene, Sync, Terminal, randint
+from engine import EventKind, Path, Scene, Sync, Terminal
 from geometry import Coord, TERMINAL_ROW_SCALE, find_coords_on_circle
 from graphics import Color, Direction, Gradient, choose_color, hex_color, hex_colors
 
@@ -62,7 +62,7 @@ class Blackhole:
         ring_size = self.radius * 3 // TERMINAL_ROW_SCALE
         available = self.term.characters()
         while len(self.ring) < ring_size and available:
-            char_id = available.pop(randint(0, len(available) - 1))
+            char_id = available.pop(random.randint(0, len(available) - 1))
             self.ring.append(char_id)
             self.in_ring.add(char_id)
         center = self.term.canvas.center()
@@ -144,11 +144,11 @@ class Blackhole:
             character = self.term.chars[char_id]
             home = character.input_coord
             around = find_coords_on_circle(home, 3 * TERMINAL_ROW_SCALE, 5)
-            nearby = around[randint(0, 4)]
-            burst = Path(randint(3, 4) / 10)
+            nearby = around[random.randint(0, 4)]
+            burst = Path(random.randint(3, 4) / 10)
             burst.ease = out_expo
             burst.add_waypoint(nearby)
-            settle = Path(randint(4, 6) / 100)
+            settle = Path(random.randint(4, 6) / 100)
             settle.ease = in_cubic
             settle.add_waypoint(home)
             explode_color = choose_color(star_colors)

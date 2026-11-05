@@ -120,16 +120,6 @@ engine, which rendered one frame as a smoke test. Shed Skin builds the engine as
 an extension module, so that block was its standalone entry point; here the
 engine is only ever imported.
 
-## TurboPython bugs worked around
-
-- **A by-value field of a class declared later does not compile.** `Flat`,
-  `Picture` and `Vec2` were moved above the classes that store them by value.
-  The generated C++ declares classes in source order with only a forward
-  declaration, and a by-value member of an incomplete type is a C++ error
-  (`field 'b' has incomplete type`) that the compiler lets through to the C++
-  build instead of reporting or reordering. Not filed upstream yet; restore
-  the original class order once fixed.
-
 ## Notes
 
 The entry point also has a headless mode used to verify the port:

@@ -40,9 +40,8 @@ class Row:
 
     def move_up(self, term: Terminal) -> None:
         for char_id in self.typed:
-            column = term.chars[char_id].coord.column
-            row = term.chars[char_id].coord.row
-            term.chars[char_id].move_to(Coord(column, row + 1))
+            character = term.chars[char_id]
+            character.move_to(Coord(character.coord.column, character.coord.row + 1))
 
 
 class Printer:

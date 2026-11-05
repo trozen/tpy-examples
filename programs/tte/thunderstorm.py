@@ -5,8 +5,8 @@ import random
 
 from tpy import int32, Own
 
-from easing import CubicBezier, in_circ, out_quint
-from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
+from easing import in_circ, make_easing, out_quint
+from engine import EventKind, ParticlePool, Path, Scene, Terminal
 from geometry import Coord
 from graphics import Color, Direction, Gradient, adjust_brightness, hex_color, hex_colors
 
@@ -142,7 +142,7 @@ class Thunderstorm:
             column = self.term.chars[branch_neighbor].coord.column
             row = self.term.chars[branch_neighbor].coord.row
         else:
-            column = randint(1, self.term.canvas.right)
+            column = random.randint(1, self.term.canvas.right)
             row = self.term.canvas.top
         while row >= self.term.canvas.bottom:
             if not self.available_strike_chars:
@@ -182,7 +182,7 @@ class Thunderstorm:
         flash_color = adjust_brightness(base_color, 1.7)
         strike_gradient = Gradient([base_color, flash_color], [7], loop=True)
         fade_gradient = Gradient([base_color, BACKGROUND], [6])
-        flash_ease = CubicBezier(0, 1.6, 1, random.uniform(-0.6, 0.4))
+        flash_ease = make_easing(0, 1.6, 1, random.uniform(-0.6, 0.4))
         for strike_char in self.pending_strike_chars:
             character = self.term.chars[strike_char]
             symbol = character.visual.symbol
@@ -207,7 +207,7 @@ class Thunderstorm:
             return
         if not self.pending_strike_chars:
             return
-        for _ in range(randint(1, 3)):
+        for _ in range(random.randint(1, 3)):
             if not self.pending_strike_chars:
                 break
             strike_char = self.pending_strike_chars.pop(0)
@@ -217,7 +217,7 @@ class Thunderstorm:
             if not self.pending_strike_chars:
                 impact_char = self.active_strike_chars[len(self.active_strike_chars) - 1]
                 impact = self.term.chars[impact_char].coord
-                for _ in range(randint(12, 18)):
+                for _ in range(random.randint(12, 18)):
                     self.emit_spark(impact)
                 self.last_strike_char = strike_char
                 for bolt_char in self.active_strike_chars:
@@ -239,11 +239,11 @@ class Thunderstorm:
         # Each spark arcs out to one side and falls to the bottom of the canvas.
         path = Path(random.uniform(0.1, 0.25), hold_time=30)
         path.ease = out_quint
-        distance = randint(4, 20)
+        distance = random.randint(4, 20)
         direction = random.choice([1, -1])
         target = Coord(impact.column + distance * direction, self.term.canvas.bottom)
         control_column = impact.column - (impact.column - target.column) // 2
-        control = Coord(control_column, randint(1, self.term.canvas.top))
+        control = Coord(control_column, random.randint(1, self.term.canvas.top))
         path.add_curved_waypoint(target, control)
         character.activate_scene("glow")
         character.activate_path(character.add_path("spark", path))
@@ -253,8 +253,7 @@ class Thunderstorm:
     def strike_faded(self, strike_char: int32) -> None:
         """A bolt character has faded out: light up the text it hit and put it away."""
         self.term.set_visible(strike_char, False)
-        hit = self.term.chars[strike_char].coord
-        target = self.term.at(hit)
+        target = self.term.at(self.term.chars[strike_char].coord)
         if target >= 0 and self.term.chars[target].visible:
             self.term.chars[target].activate_scene("glow")
             self.pending_glow_chars.append(target)
@@ -268,10 +267,10 @@ class Thunderstorm:
         if self.delay:
             self.delay -= 1
             return
-        for _ in range(randint(1, 6)):
-            spawn_column = randint(1 - self.term.canvas.top, self.term.canvas.right)
+        for _ in range(random.randint(1, 6)):
+            spawn_column = random.randint(1 - self.term.canvas.top, self.term.canvas.right)
             self.emit_raindrop(Coord(spawn_column - 1, self.term.canvas.top + 1))
-        self.delay = randint(1, 7)
+        self.delay = random.randint(1, 7)
 
     def emit_raindrop(self, origin: Coord) -> None:
         raindrop, created = self.rain_pool.acquire(self.term)

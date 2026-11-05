@@ -25,8 +25,9 @@ The original states no license.
   expression: `K - c`, `n >> K` and `steps += ...` are refused when their operands
   differ in width. So the values that meet the collatz numbers are annotated
   `int64`: `N`, `K`, the two lookup tables `lookup_multistep` and `lookup_c`,
-  and the `steps` counter of the search loop. Everything else is inferred from
-  those.
+  and the `steps` counter. `main` uses `steps` in two loops, and the annotation
+  goes on its first binding, in the loop that fills `lookup_tail`; the search
+  loop reuses the same 64-bit local. Everything else is inferred from those.
 - `t0` is initialised before the timing loop. The original assigns it only at
   `n == 5`, which the compiler cannot prove is always reached.
 - The two formatted lines became f-strings — see below.

@@ -8,7 +8,6 @@ from enum import Enum
 from tpy import int32, Own, ValueType
 
 from geometry import Coord, TERMINAL_ROW_SCALE, find_normalized_distance_from_center
-from rng import randint
 
 _HEX_DIGITS = "0123456789abcdef"
 
@@ -48,7 +47,7 @@ def hex_colors(texts: list[str]) -> Own[list[Color]]:
 
 def choose_color(colors: list[Color]) -> Color:
     """random.choice, for a list of colors (README, "TurboPython bugs worked around")."""
-    return colors[randint(0, len(colors) - 1)]
+    return colors[random.randint(0, len(colors) - 1)]
 
 
 def fg_sequence(color: Color) -> str:

@@ -9,7 +9,7 @@ download, nothing to configure, output in a second or two.
 | `hello.py` | prints a greeting and the compiler version | 6 |
 | `brainfuck.py` | a Brainfuck interpreter running five embedded programs, including *99 Bottles of Beer* | 115 |
 | `game_of_life.py` | Conway's Game of Life stepping a glider across a 10×8 grid | 79 |
-| `mandelbrot.py` | the Mandelbrot set as ASCII art with a logarithmic character ramp | 47 |
+| `mandelbrot.py` | the Mandelbrot set as ASCII art with a logarithmic character ramp | 50 |
 
 Unlike `landing/`, these are not bound by the website's line-width limit, and
 unlike `shedskin/` they have no original to stay faithful to: they are written

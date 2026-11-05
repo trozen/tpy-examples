@@ -2,9 +2,11 @@
 they reach each cell: the paths that burn's fire and laseretch's laser follow."""
 from __future__ import annotations
 
+import random
+
 from tpy import int32, Own
 
-from engine import Terminal, randint
+from engine import Terminal
 
 
 def _visited_from(term: Terminal, start: int32) -> Own[list[bool]]:
@@ -22,11 +24,11 @@ def prims_order(term: Terminal, start: int32) -> Own[list[int32]]:
     order = [start]
     edge = [start]
     while edge:
-        current = edge.pop(randint(0, len(edge) - 1))
+        current = edge.pop(random.randint(0, len(edge) - 1))
         unvisited = unvisited_neighbors(term, current, visited)
         if not unvisited:
             continue
-        linked = unvisited.pop(randint(0, len(unvisited) - 1))
+        linked = unvisited.pop(random.randint(0, len(unvisited) - 1))
         visited[linked] = True
         order.append(linked)
         if unvisited:
@@ -39,8 +41,7 @@ def prims_order(term: Terminal, start: int32) -> Own[list[int32]]:
 def unvisited_neighbors(term: Terminal, char_id: int32, visited: list[bool]) -> Own[list[int32]]:
     found: list[int32] = []
     for neighbor in term.neighbors(char_id):
-        coord = term.chars[neighbor].input_coord
-        if not visited[neighbor] and term.canvas.coord_is_in_text(coord):
+        if not visited[neighbor] and term.canvas.coord_is_in_text(term.chars[neighbor].input_coord):
             found.append(neighbor)
     return found
 
@@ -55,7 +56,7 @@ def recursive_backtracker_order(term: Terminal, start: int32) -> Own[list[int32]
     while stack:
         unvisited = unvisited_neighbors(term, current, visited)
         if unvisited:
-            linked = unvisited[randint(0, len(unvisited) - 1)]
+            linked = unvisited[random.randint(0, len(unvisited) - 1)]
             visited[linked] = True
             order.append(linked)
             stack.append(linked)

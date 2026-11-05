@@ -35,8 +35,7 @@ the effect, three short paragraphs about TurboPython and this port, and a
 pointer to `-h`. Input is plain text. The canvas is the size of the text,
 clipped to the terminal, and each effect runs at 60 frames a second unless
 `--frame-rate` says otherwise; that only paces the drawing, so every frame is
-still drawn. The terminal needs 24-bit color. Stopping an effect with Ctrl-C
-leaves the cursor hidden; `tput cnorm` brings it back (see below).
+still drawn. The terminal needs 24-bit color.
 
 When stdout is not a terminal nothing is drawn. Instead each effect renders
 its frames as fast as it can and prints how many there were, plus an FNV-1a
@@ -66,12 +65,13 @@ is seeded afresh, so its line is the same whether it runs alone or in turn.
   local and gives it to a character with `add_scene` / `add_path`, which take
   `Own[...]`. The local is moved in, not copied.
 - **Small immutable records as `ValueType`s:** `Coord`, `Color`, `Visual`,
-  `Frame`, `Segment`, `Event` and the `CubicBezier` easing curve. They copy
-  freely and can be dictionary keys (`dict[Coord, Color]` for the gradients).
+  `Frame`, `Segment` and `Event`. They copy freely and can be dictionary keys
+  (`dict[Coord, Color]` for the gradients).
 - **Callables in fields.** A scene's or path's easing is a
   `Callable[[float], float] | None`. It holds either a plain function
-  (`in_circ`, `out_quint`) or an instance of a class with `__call__`
-  (`CubicBezier`).
+  (`in_circ`, `out_quint`) or a closure: `make_easing` returns a nested
+  `def` that calls its sibling `def`s and reads the curve's control points
+  after `make_easing` has returned.
 - **A generic function over a protocol:** `play[E: Effect]` drives any effect
   with `step()` and `frame()`.
 - The terminal plumbing: `argparse`; piped input read from file descriptor 0
@@ -198,54 +198,17 @@ the rest of the surface darkens away.
   apart. `split_characters` encodes the text and decodes one UTF-8 sequence at
   a time. Code-point strings are planned in tpy-lang's
   `docs/STRING_WIDTH_DESIGN.md`; revert once `str` indexes by code point.
-- **`chr()` above 127 returns one wrong byte.** It compiles to
-  `static_cast<char>`. decrypt's cipher symbols, which TTE builds with `chr()`
-  over code point ranges, are spelled out as string literals. Tracked in
-  tpy-lang's `BUGS.md` (`chr-above-127-truncates`).
-- **Ctrl-C can't be caught.** TTE restores the cursor in a `finally` when it
-  is interrupted. Outside `asyncio`, TurboPython doesn't turn SIGINT into
-  `KeyboardInterrupt`, and `signal.signal` doesn't exist yet. So stopping an
-  effect early leaves the cursor hidden; `tput cnorm` shows it again. Tracked
-  in tpy-lang's `TODO.md` ("Synchronous SIGINT -> `KeyboardInterrupt`");
-  restore the cursor in a `finally` once SIGINT can be caught.
+- **`chr()` stops at 127.** It returns a single byte of a UTF-8 `str`, so
+  above 127 it raises `ValueError`. decrypt's cipher symbols, which TTE builds
+  with `chr()` over code point ranges, are spelled out as string literals.
+  Tracked in tpy-lang's `TODO.md` ("What `chr()` returns").
 - **`sys.stdin` is missing.** Piped text is read with `os.read(0, ...)`.
   Tracked in tpy-lang's `TODO.md` ("Downstream-blocked stdlib gaps (2026-08-03
   port report)").
-- **`random` skips the draw for a one-value range.** For `randint(a, a)` (and
-  `randrange(1)` or `choice` of one element), CPython still draws random bits
-  and TurboPython returns at once. The two runs' random streams then part
-  company, which one-line input triggers constantly. `rng.randint` draws
-  those bits itself, and every `randint` in the port goes through it, as do
-  sandstorm's random letters, drawn from a pool that can hold just one. The
-  remaining `randrange` and `choice` calls always have more than one value
-  to choose from. Tracked in tpy-lang's `BUGS.md`
-  (`randbelow-one-skips-draw`).
 - **Call arguments evaluate right to left.** Where one expression made several
   random draws, the draws are bound to locals first: decrypt's typing frame,
   the fire's starting cell, a spark's target, and a sandstorm grain's symbol
-  and shade. Tracked in tpy-lang's
-  `BUGS.md` (`subexpression-right-to-left-eval`).
-- **A closure built from nested `def`s captures its parameters by
-  reference.** TTE's `make_easing(x1, y1, x2, y2)` returns an inner function.
-  Compiled, that function reads its parameters from `make_easing`'s stack frame
-  after it has returned, so the lightning flash eased along garbage. Returning
-  a callable-class instance as a `Callable` isn't supported either, so the
-  thunderstorm builds a `CubicBezier` directly. Tracked in tpy-lang's
-  `BUGS.md` (`escaping-closure-sibling-capture-dangles`).
-- **An `Optional` field of a `ValueType` record can't be set in a
-  constructor.** `Visual` has `fg: Color` plus `colored: bool` rather than
-  `fg: Color | None`. Tracked in tpy-lang's `BUGS.md`
-  (`valuetype-optional-ctor-member-init`).
-- **Some `ValueType` field reads and writes are refused.** A list element's
-  field can't be passed as an argument (`f(term.chars[i].input_coord)`), nor
-  a field two hops deep to a constructor (`Visual(symbol, self.visual.fg,
-  ...)`), so those are bound to a local first. A field can't be written
-  through a list element either, so `Character` has small methods
-  (`move_to`, `return_home`, `set_symbol`, `set_scene_ease`) that the
-  effects call instead. Tracked in tpy-lang's `BUGS.md`
-  (`valuetype-list-elem-field-call-arg-rejects`,
-  `deep-field-chain-at-record-arg`, `nested-field-target-container-write`).
-- **`list.sort(key=...)` is missing, and a `sorted(key=lambda ...)` that
+  and shade. Tracked i- **`list.sort(key=...)` is missing, and a `sorted(key=lambda ...)` that
   captures `self` is refused.** `Terminal.characters()` and `grouped()` sort
   `(key, ..., id)` tuples. Tracked in tpy-lang's `TODO.md` ("`key=` keyword
   on `list.sort()`") and `BUGS.md` (`sorted-key-lambda-self-capture-rejects`).
@@ -253,15 +216,9 @@ the rest of the surface darkens away.
   `"0123456789abcdef"`. Tracked in tpy-lang's `TODO.md` ("`int(text, base)`
   two-argument form").
 - **`random.choice` can't infer its element type for a list of records.**
-  `graphics.choose_color` indexes with `rng.randint(0, len(colors) - 1)`,
+  `graphics.choose_color` indexes with `random.randint(0, len(colors) - 1)`,
   which draws exactly as `choice` does. Tracked in tpy-lang's `BUGS.md`
   (`random-choice-record-list-rejects`).
-- **A conditional expression mixing a list element and a string literal
-  dangles.** In swarm, `then = names[i + 1] if ... else ""` compiled to a
-  `std::string_view` of the temporary `std::string` the C++ `?:` produces, so
-  the name stored from it was garbage and the run failed with a `KeyError`. It
-  is a plain `if` now. Tracked in tpy-lang's `BUGS.md`
-  (`ternary-list-elem-vs-literal-view-dangles`).
 - **A name bound in one `if` branch and reused as a loop variable in another
   isn't declared there.** crumble's reset loop failed to compile (`'char_id'
   was not declared in this scope`) until it got a name of its own. Tracked in
@@ -274,19 +231,6 @@ the rest of the surface darkens away.
   `["--help"]` in place of empty arguments. Tracked in tpy-lang's `BUGS.md`
   (`argparse-help-omits-positional-choices`) and `TODO.md` ("argparse
   builder-trace limits hit by a real CLI").
-- **A mutation through a local alias doesn't count as mutating.** In print's
-  `Row.move_up(term)`, `character = term.chars[i]` followed by
-  `character.move_to(...)` left `term` inferred read-only, and the C++ build
-  failed ("discards qualifiers"). The call goes through `term.chars[i]`
-  directly. Tracked in tpy-lang's `BUGS.md`
-  (`alias-of-param-field-mutation-not-propagated`).
-- **A skipped default is resolved in the caller's module.** With `Scene`'s
-  parameters as `(name, sync=Sync.NONE, looping=False)`, laseretch's
-  `Scene("laser", looping=True)` failed with `Undefined variable: 'Sync'`,
-  since laseretch doesn't import `Sync`. `sync` now comes last, where it is
-  never skipped over. Tracked in tpy-lang's `BUGS.md` ("A materialized
-  parameter default that names a module-level constant or enum member
-  resolves in the CALLER's scope").
 - **Smaller constructs the code generator doesn't handle yet** were rewritten
   with a local, a loop or a helper. Each compiles fine in its rewritten form:
   - `[" "] * width` appended to a list
@@ -305,13 +249,17 @@ the rest of the surface darkens away.
   - `x.f and x.f not in names`, testing a field inside `and`
   - a conditional expression, or a method's list result, assigned to a field
     in `__init__`
+  - `==` between an `Optional` record field and a record (matrix tests
+    `is not None` first)
 
   In the same vein, `own_iter()` still warned about copying a list it should
   have moved, so matrix pops its columns off instead. Of these, tpy-lang's
   `BUGS.md` tracks the discarded `list.pop(i)`
   (`list-pop-discarded-result-rejects`), the tuple `list.pop()` returns
-  (`pop-result-tuple-subscript-rejects`) and `own_iter()`
-  (`own-iter-spurious-copy-warning`); the rest are not filed upstream yet.
+  (`pop-result-tuple-subscript-rejects`), `own_iter()`
+  (`own-iter-spurious-copy-warning`) and the `Optional` record `==`
+  (`record-compare-operand-form-rejects`); the rest are not filed upstream
+  yet.
 
 ## Verification
 

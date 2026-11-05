@@ -305,16 +305,22 @@ def main() -> int32:
         if not effect or effect == name:
             names.append(name)
     screen = Screen(tty, width, args.frame_rate)
-    for i in range(len(names)):
-        name = names[i]
-        # Seeding each effect makes its run the same whether played alone or in turn.
-        if seed is not None:
-            random.seed(seed)
-        between = i < len(names) - 1
-        if text.strip():
-            run(name, text, width, height, screen, between)
-        else:
-            run(name, DEMO_TEXT.replace("{effect}", name), width, height, screen, between)
+    try:
+        for i in range(len(names)):
+            name = names[i]
+            # Seeding each effect makes its run the same whether played alone or in turn.
+            if seed is not None:
+                random.seed(seed)
+            between = i < len(names) - 1
+            if text.strip():
+                run(name, text, width, height, screen, between)
+            else:
+                run(name, DEMO_TEXT.replace("{effect}", name), width, height, screen, between)
+    finally:
+        # An effect stopped with Ctrl-C would otherwise leave the cursor hidden.
+        if tty:
+            sys.stdout.write("\x1b[?25h")
+            sys.stdout.flush()
     return 0
 
 

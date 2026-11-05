@@ -41,6 +41,8 @@ supports well today.
       files), `tplib/` (library walkthroughs) and `programs/` (applications), seeded
       from the tpy-lang checkout's `examples/`.
 - [ ] CPython extension modules written in TurboPython, as a `programs/` entry.
+- [ ] `othello` — reads its moves with `input()`, which tpy-lang 0.7 has; not
+      tried yet. Its sibling `othello2` is still blocked, see below.
 - [ ] `programs/tte`: more of TerminalTextEffects' effects, if wanted; the ones
       left are the less showy ones (binarypath, bouncyballs, bubbles,
       colorshift, errorcorrect, middleout, orbittingvolley, overflow, pour,
@@ -59,8 +61,8 @@ against tpy-lang.
 - `sudoku5`, `life` — need `itertools` beyond the current ~35% (`chain`, `product`,
   `groupby`).
 - `rsync` — needs `hashlib` beyond SHA-256 (currently ~20%).
-- `othello`, `othello2` — need `sys.stdin` and `input()` for their interactive
-  and UGI modes. Unreachable branches still have to typecheck.
+- `othello2` — needs `sys.stdin` for its UGI mode. Unreachable branches still
+  have to typecheck.
 - `minpng` — needs `struct.pack`; only `unpack`/`calcsize` are implemented.
 - `brainfuck` — does `from sys import stdin` and `stdin.read(1)`; `sys.stdin` is
   Missing ("needs read-side protocol"). Was in the first batch until the roadmap was

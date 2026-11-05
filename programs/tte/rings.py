@@ -6,7 +6,7 @@ import random
 from tpy import int32, Own
 
 from easing import out_cubic, out_quad, out_sine
-from engine import EventKind, Path, Scene, Terminal, randint
+from engine import EventKind, Path, Scene, Terminal
 from geometry import Coord, TERMINAL_ROW_SCALE, find_coords_in_rect, find_coords_on_circle
 from graphics import Color, Direction, Gradient, hex_colors
 
@@ -148,7 +148,7 @@ class Rings:
         coords = find_coords_in_rect(origin, self.ring_gap)
         drift = Path(0.14, loop=True)
         for _ in range(5):
-            drift.add_waypoint(coords[randint(0, len(coords) - 1)])
+            drift.add_waypoint(coords[random.randint(0, len(coords) - 1)])
         character = self.term.chars[char_id]
         character.remove_path("disperse")
         character.add_path("disperse", drift)

@@ -5,7 +5,7 @@ import random
 
 from tpy import int32, Own, copy
 
-from engine import EventKind, Grouping, Path, Scene, Sync, Terminal, randint
+from engine import EventKind, Grouping, Path, Scene, Sync, Terminal
 from geometry import Coord
 from graphics import Color, Direction, Gradient, choose_color, hex_colors
 
@@ -57,9 +57,9 @@ class VHSTape:
 
     def build_line(self, chars: list[int32], final_colors: dict[Coord, Color],
                    glitch_colors: list[Color], noise_colors: list[Color]) -> None:
-        offset = randint(4, 25)
+        offset = random.randint(4, 25)
         direction = random.choice([-1, 1])
-        hold_time = randint(1, 50)
+        hold_time = random.randint(1, 50)
         white = Color(255, 255, 255)
         for char_id in chars:
             character = self.term.chars[char_id]
@@ -130,16 +130,16 @@ class VHSTape:
     def restore(self, line: int32) -> None:
         for char_id in self.lines[line]:
             character = self.term.chars[char_id]
-            speed = 40 / randint(20, 40)
+            speed = 40 / random.randint(20, 40)
             character.paths[character.path_index("restore")].set_speed(speed)
             character.activate_path_named("restore")
 
     def glitch(self, line: int32) -> None:
         for char_id in self.lines[line]:
             character = self.term.chars[char_id]
-            glitch_speed = 40 / randint(20, 40)
+            glitch_speed = 40 / random.randint(20, 40)
             character.paths[character.path_index("glitch")].set_speed(glitch_speed)
-            restore_speed = 40 / randint(20, 40)
+            restore_speed = 40 / random.randint(20, 40)
             character.paths[character.path_index("restore")].set_speed(restore_speed)
             character.activate_path_named("glitch")
 
@@ -157,7 +157,7 @@ class VHSTape:
             height = self.term.canvas.text_height()
             if height < 3:
                 return
-            self.wave_top = self.term.canvas.text_bottom + randint(max(3, round(height * 0.5)), height)
+            self.wave_top = self.term.canvas.text_bottom + random.randint(max(3, round(height * 0.5)), height)
         if not self.lines_movement_complete(self.wave_lines):
             return
         if self.wave_lines:
@@ -200,9 +200,9 @@ class VHSTape:
                 still_glitching.append(line)
         self.glitch_lines = still_glitching
         if random.random() < GLITCH_LINE_CHANCE and len(self.glitch_lines) < 3:
-            line = randint(0, len(self.lines) - 1)
+            line = random.randint(0, len(self.lines) - 1)
             if line not in self.wave_lines and line not in self.glitch_lines:
-                self.set_hold_time(line, randint(20, 75))
+                self.set_hold_time(line, random.randint(20, 75))
                 self.glitch_lines.append(line)
                 self.glitch(line)
                 self.activate_line(line)

@@ -5,7 +5,7 @@ import random
 
 from tpy import int32, Own
 
-from engine import EventKind, Scene, Terminal, randint, split_characters
+from engine import EventKind, Scene, Terminal, split_characters
 from graphics import Color, Direction, Gradient, choose_color, hex_colors
 
 TYPING_SPEED = 2
@@ -62,9 +62,9 @@ class Decrypt:
                 fast.add_frame(random.choice(symbols), 2, color)
             character.add_scene(fast)
             slow = Scene("slow_decrypt")
-            for _ in range(randint(1, 15)):
+            for _ in range(random.randint(1, 15)):
                 symbol = random.choice(symbols)
-                if randint(0, 100) <= 30:
+                if random.randint(0, 100) <= 30:
                     duration = random.randrange(35, 60)
                 else:
                     duration = random.randrange(3, 6)
@@ -81,7 +81,7 @@ class Decrypt:
     def step(self) -> bool:
         if self.phase == "typing":
             if self.typing_pending or self.term.has_active():
-                if self.typing_pending and randint(0, 100) <= 75:
+                if self.typing_pending and random.randint(0, 100) <= 75:
                     for _ in range(TYPING_SPEED):
                         if self.typing_pending:
                             char_id = self.typing_pending.pop(0)

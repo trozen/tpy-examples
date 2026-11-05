@@ -1,4 +1,3 @@
-# tpy: link("SDL2")
 '''
 A minimal SDL2-backed stand-in for the handful of pygame calls the DOOM
 renderer makes.
@@ -14,6 +13,8 @@ SDL2's symbols are declared directly with @native. SDL.h is deliberately not
 included: only the functions below are used, so declaring them keeps the build
 free of any dependency on SDL's headers being installed.
 '''
+__tpy__ = {"links": ["SDL2"]}
+
 from typing import Final
 
 from tpy import char, int32, Own, uint8, uint32, Ptr, readonly
@@ -152,8 +153,8 @@ def set_palette(screen: Screen, palette: list[tuple[int32, int32, int32]]) -> No
     '''Precompute index -> ARGB so a frame costs one lookup per pixel.'''
     for i in range(len(palette)):
         rgb = palette[i]
-        screen.lut[i] = uint32(0xff000000 | (rgb[0] << 16) |
-                               (rgb[1] << 8) | rgb[2])
+        screen.lut[i] = uint32(0xff000000) | uint32((rgb[0] << 16) |
+                                                    (rgb[1] << 8) | rgb[2])
 
 
 def present(screen: Screen, buf: bytearray) -> None:

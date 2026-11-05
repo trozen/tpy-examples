@@ -7,7 +7,7 @@ import random
 from tpy import int32, Own
 
 from easing import in_out_quad, in_out_sine, out_sine
-from engine import Path, Scene, Sync, Terminal, randint
+from engine import Path, Scene, Sync, Terminal
 from geometry import Coord, TERMINAL_ROW_SCALE, find_coords_in_circle, find_coords_on_circle
 from graphics import Color, Direction, Gradient, choose_color, hex_color, hex_colors
 
@@ -77,7 +77,7 @@ class Swarm:
             # The swarm roams from just off the canvas through a few areas,
             # each a hop of `radius` from the one before.
             spawn = self.term.canvas.random_coord_outside()
-            area_count = randint(SWARM_AREA_COUNT_MIN, SWARM_AREA_COUNT_MAX)
+            area_count = random.randint(SWARM_AREA_COUNT_MIN, SWARM_AREA_COUNT_MAX)
             areas: dict[Coord, list[Coord]] = {}
             focus = spawn
             chosen = 0
@@ -118,13 +118,13 @@ class Swarm:
             name = f"{area_number}_swarm_area"
             origin = Path(0.4)
             origin.ease = out_sine
-            origin.add_waypoint(coords[randint(0, len(coords) - 1)])
+            origin.add_waypoint(coords[random.randint(0, len(coords) - 1)])
             names.append(name)
             paths.append(origin)
             for _ in range(2):
                 wander = Path(0.18)
                 wander.ease = in_out_sine
-                wander.add_waypoint(coords[randint(0, len(coords) - 1)])
+                wander.add_waypoint(coords[random.randint(0, len(coords) - 1)])
                 names.append(str(len(names)))
                 paths.append(wander)
             area_number += 1
@@ -141,11 +141,7 @@ class Swarm:
         character.add_scene(settle)
         # One path after another, all the way home.
         for i in range(len(paths)):
-            # Not a conditional expression: tpy binds that to a view of a
-            # temporary here, which dangles (README).
-            then = ""
-            if i + 1 < len(names):
-                then = names[i + 1]
+            then = names[i + 1] if i + 1 < len(names) else ""
             if names[i].endswith("_swarm_area"):
                 character.add_path(names[i], paths.pop(0), then=then, scene="flash",
                                    start_layer=1, stop_scene=True)

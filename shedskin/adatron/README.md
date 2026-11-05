@@ -55,17 +55,10 @@ the first, which is reproduced rather than fixed.
 Each of these is a piece of Python the compiler does not accept yet. Revert once
 it does.
 
-- **File objects are not iterable.** `for line in protfile:` became
-  `for line in protfile.readlines():`, which reads the whole file at once.
-  Tracked in tpy-lang's `TODO.md` ("Iterating a file object").
 - **Unpacking a list is rejected.** `name, mass, ... = line.strip().split("\t")`
   became an indexed tuple: unpacking works for tuples, and `split()` returns a
   list (`Cannot unpack non-tuple type Own[list[str]]`). Tracked in tpy-lang's
   `TODO.md` ("Unpacking a `list` (and any non-tuple sequence)").
-- **`max()` has no single-iterable form.** `max(current_predictions)` became
-  `sorted(current_predictions)[-1]`; only the two- and three-argument scalar
-  overloads exist. Tracked in tpy-lang's `TODO.md` ("`min(iterable)` /
-  `max(iterable)` single-iterable form").
 - **No printf-style `%` formatting on `str`.** `print("Starting iteration %s..." %
   iteration)` and the closing `TIME` line became f-strings. Tracked in tpy-lang's
   `TODO.md` ("printf-style `%` formatting on `str`").

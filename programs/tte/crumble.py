@@ -6,7 +6,7 @@ import random
 from tpy import int32, Own
 
 from easing import out_bounce, out_quint
-from engine import EventKind, Path, Scene, Sync, Terminal, randint
+from engine import EventKind, Path, Scene, Sync, Terminal
 from geometry import Coord
 from graphics import Color, Direction, Gradient, adjust_brightness, hex_colors
 
@@ -94,13 +94,13 @@ class Crumble:
             if self.pending:
                 if self.fall_delay == 0:
                     # Ever bigger groups, ever faster, until the whole text is down.
-                    for _ in range(randint(1, self.fall_group_maxsize)):
+                    for _ in range(random.randint(1, self.fall_group_maxsize)):
                         if self.pending:
                             char_id = self.pending.pop(0)
                             self.term.chars[char_id].activate_scene("weaken")
                             self.term.activate(char_id)
-                    self.fall_delay = randint(self.min_fall_delay, self.max_fall_delay)
-                    if randint(1, 10) > 4:
+                    self.fall_delay = random.randint(self.min_fall_delay, self.max_fall_delay)
+                    if random.randint(1, 10) > 4:
                         self.fall_group_maxsize += 1
                         self.min_fall_delay = max(0, self.min_fall_delay - 1)
                         self.max_fall_delay = max(0, self.max_fall_delay - 1)
@@ -110,7 +110,7 @@ class Crumble:
                 self.stage = "vacuuming"
         elif self.stage == "vacuuming":
             if self.unvacuumed:
-                for _ in range(randint(3, 10)):
+                for _ in range(random.randint(3, 10)):
                     if self.unvacuumed:
                         char_id = self.unvacuumed.pop(0)
                         self.term.chars[char_id].activate_path_named("top")

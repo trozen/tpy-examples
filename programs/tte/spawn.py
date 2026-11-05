@@ -10,7 +10,7 @@ import random
 from tpy import int32, Own
 
 from easing import out_sine
-from engine import Scene, Terminal, randint
+from engine import Scene, Terminal
 from geometry import Coord, TERMINAL_ROW_SCALE, find_length_of_line
 from graphics import Color, Gradient, choose_color, hex_color, hex_colors, shift_color_towards
 
@@ -106,14 +106,14 @@ class Spawn:
             # at a pace of its own.
             cool = Scene("cool")
             if random.random() >= INSTANT_CHANCE:
-                for _ in range(randint(PLASMA_FRAMES_MIN, PLASMA_FRAMES_MAX)):
+                for _ in range(random.randint(PLASMA_FRAMES_MIN, PLASMA_FRAMES_MAX)):
                     symbol = random.choice(PLASMA_SYMBOLS)
                     color = choose_color(plasma_colors)
-                    cool.add_frame(symbol, randint(1, 3), color)
+                    cool.add_frame(symbol, random.randint(1, 3), color)
             final_color = final_colors[home]
             pale_blue = plasma_colors[2]
             cooling = Gradient([hot, pale_blue, final_color], [4, 10])
-            cool_step = randint(COOL_STEP_MIN, COOL_STEP_MAX)
+            cool_step = random.randint(COOL_STEP_MIN, COOL_STEP_MAX)
             for color in cooling.spectrum:
                 cool.add_frame(character.input_symbol, cool_step, color)
             character.add_scene(cool)

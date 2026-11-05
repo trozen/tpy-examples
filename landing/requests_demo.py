@@ -12,7 +12,7 @@ class Repo:
     forks: int = field(alias="forks_count")
 
 def main() -> None:
-    url = "https://api.github.com/repos/python/cpython"
+    url = "https://api.github.com/repos/trozen/tpy-lang"
     # inspired by requests, a popular Python package
     repo = Repo.from_json(requests.get(url).text)
     print(f"{repo.full_name} ({repo.language})")

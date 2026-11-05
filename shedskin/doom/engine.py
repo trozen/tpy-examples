@@ -75,41 +75,6 @@ class Linedef:
         self.sidedef_back = sidedef_back
 
 
-# Moved ahead of Sector: Sector stores a Flat and a Picture by value, and
-# generated classes appear in source order with no forward declarations.
-class Flat:
-    data: list[list[list[int32]]]
-
-    def __init__(self, data: list[bytes]) -> None:
-        self.data = [[[d[64*y+x] for y in range(64)]
-                     for x in range(64)] for d in data]
-
-    def get_data(self, frame_count: int32) -> list[list[int32]]:
-        return self.data[(frame_count >> 4) % len(self.data)]
-
-
-class Picture:
-    width: int32
-    height: int32
-    data: list[list[int32]]
-
-    def __init__(self, data: bytes) -> None:
-        # struct.unpack_from yields exactly-sized types (uint16/uint8 here), so
-        # the values are widened to int32 before they meet ordinary arithmetic.
-        width = int32(unpack_from('<HHhh', data, 0)[0])
-        height = int32(unpack_from('<HHhh', data, 0)[1])
-        self.width = width
-        self.height = height
-        self.data = [[0 for k in range(height)] for j in range(width)]
-
-        for j in range(width):
-            col_offset = int32(unpack_from('<H', data, 8+4*j)[0])
-            y_offset = int32(unpack_from('<B', data, col_offset)[0])
-            length = int32(unpack_from('<BB', data, col_offset+1)[0])
-            for y in range(length):
-                self.data[j][y+y_offset] = data[col_offset+3+y]
-
-
 class Sector:
     floor_h: int32
     ceil_h: int32
@@ -179,6 +144,17 @@ class Seg:
                                  vertex_end.y - vertex_start.y)
 
 
+class Flat:
+    data: list[list[list[int32]]]
+
+    def __init__(self, data: list[bytes]) -> None:
+        self.data = [[[d[64*y+x] for y in range(64)]
+                     for x in range(64)] for d in data]
+
+    def get_data(self, frame_count: int32) -> list[list[int32]]:
+        return self.data[(frame_count >> 4) % len(self.data)]
+
+
 class BSPNode:
     partition_x: int32
     partition_y: int32
@@ -229,18 +205,6 @@ class Thing:
         self.type_ = type_
 
 
-class Vec2:
-    x: float
-    y: float
-
-    def __init__(self, x: float = 0.0, y: float = 0.0) -> None:
-        self.x = x
-        self.y = y
-
-    def dot(self, v: Vec2) -> float:
-        return self.x * v.x + self.y * v.y
-
-
 class Player:
     x: float
     y: float
@@ -275,6 +239,28 @@ class Texture:
         self.height = height
 
 
+class Picture:
+    width: int32
+    height: int32
+    data: list[list[int32]]
+
+    def __init__(self, data: bytes) -> None:
+        # struct.unpack_from yields exactly-sized types (uint16/uint8 here), so
+        # the values are widened to int32 before they meet ordinary arithmetic.
+        width = int32(unpack_from('<HHhh', data, 0)[0])
+        height = int32(unpack_from('<HHhh', data, 0)[1])
+        self.width = width
+        self.height = height
+        self.data = [[0 for k in range(height)] for j in range(width)]
+
+        for j in range(width):
+            col_offset = int32(unpack_from('<H', data, 8+4*j)[0])
+            y_offset = int32(unpack_from('<B', data, col_offset)[0])
+            length = int32(unpack_from('<BB', data, col_offset+1)[0])
+            for y in range(length):
+                self.data[j][y+y_offset] = data[col_offset+3+y]
+
+
 class Colormap:
     data: list[int32]
 
@@ -282,6 +268,18 @@ class Colormap:
         self.data = []
         for i in range(256):
             self.data.append(data[i])
+
+
+class Vec2:
+    x: float
+    y: float
+
+    def __init__(self, x: float = 0.0, y: float = 0.0) -> None:
+        self.x = x
+        self.y = y
+
+    def dot(self, v: Vec2) -> float:
+        return self.x * v.x + self.y * v.y
 
 
 class Map:

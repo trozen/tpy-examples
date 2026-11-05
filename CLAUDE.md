@@ -30,10 +30,10 @@ When writing or modifying `.py` files compiled by tpy:
 tpy --install-agent-docs docs/
 ```
 
-Examples target **tpy-lang 0.6.2**, the release whose `v0.6.2` tag is pinned as
-the `.verify/tpy` submodule. Between releases the submodule may pin a
-pre-release commit instead; the submodule pointer is the only record of that
-commit, so do not repeat the hash in prose. When the compiler moves, move the
+Examples target **tpy-lang 0.7.0**, the release whose `v0.7.0` tag is pinned as
+the `.verify/tpy` submodule. A pre-release pins a commit of tpy-lang instead;
+the submodule pointer is the only record of that commit, so do not repeat the
+hash in prose. When the compiler moves, move the
 submodule; if the version changes too, update it here and in `README.md` — the
 Requirements bullet and, on a release, both `pip install` blocks (a pre-release
 installs from the submodule instead). `make test` fails while the compiler and

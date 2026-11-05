@@ -6,7 +6,7 @@ from typing import Final
 
 from tpy import int32, Own
 
-from engine import Grouping, Scene, Terminal, randint
+from engine import Grouping, Scene, Terminal
 from geometry import Coord
 from graphics import (Color, Direction, Gradient, adjust_brightness, choose_color, hex_color,
                       hex_colors)
@@ -64,18 +64,18 @@ class RainColumn:
             term.chars[char_id].return_home()
         self.visible.clear()
         if phase == "fill":
-            self.base_fall_delay = randint(max(RAIN_FALL_DELAY_RANGE[0] // 3, 1),
+            self.base_fall_delay = random.randint(max(RAIN_FALL_DELAY_RANGE[0] // 3, 1),
                                                   max(RAIN_FALL_DELAY_RANGE[1] // 3, 1))
         else:
-            self.base_fall_delay = randint(RAIN_FALL_DELAY_RANGE[0], RAIN_FALL_DELAY_RANGE[1])
+            self.base_fall_delay = random.randint(RAIN_FALL_DELAY_RANGE[0], RAIN_FALL_DELAY_RANGE[1])
         self.fall_delay = 0
         if phase == "rain":
-            self.length = randint(max(1, int(len(self.chars) * 0.1)), len(self.chars))
+            self.length = random.randint(max(1, int(len(self.chars) * 0.1)), len(self.chars))
         else:
             self.length = len(self.chars)
         self.hold_time = 0
         if self.length == len(self.chars):
-            self.hold_time = randint(20, 45)
+            self.hold_time = random.randint(20, 45)
 
     def trim(self, term: Terminal, rain_colors: Gradient) -> None:
         if not self.visible:
@@ -100,7 +100,7 @@ class RainColumn:
         self.visible = still_on_canvas
 
     def resolve_next(self) -> int32:
-        return self.visible.pop(randint(0, len(self.visible) - 1))
+        return self.visible.pop(random.randint(0, len(self.visible) - 1))
 
     def tick(self, term: Terminal, rain_colors: Gradient, highlight: Color) -> None:
         if not self.fall_delay:
@@ -116,7 +116,7 @@ class RainColumn:
                 self.visible.append(next_id)
             elif self.visible:
                 head = term.chars[self.visible[len(self.visible) - 1]]
-                if head.visual.colored and head.visual.fg == highlight:
+                if head.visual.fg is not None and head.visual.fg == highlight:
                     head.set_appearance(head.visual.symbol, choose_color(rain_colors.spectrum))
                 if self.hold_time:
                     self.hold_time -= 1
@@ -207,10 +207,10 @@ class Matrix:
     def rain(self) -> None:
         if not self.column_delay:
             if self.phase == "rain":
-                for _ in range(randint(1, 3)):
+                for _ in range(random.randint(1, 3)):
                     if self.pending:
                         self.active.append(self.pending.pop(0))
-                self.column_delay = randint(RAIN_COLUMN_DELAY_RANGE[0],
+                self.column_delay = random.randint(RAIN_COLUMN_DELAY_RANGE[0],
                                                    RAIN_COLUMN_DELAY_RANGE[1])
             else:
                 while self.pending:
@@ -260,7 +260,7 @@ class Matrix:
             if self.resolve_delay:
                 self.resolve_delay -= 1
                 continue
-            for _ in range(randint(1, 4)):
+            for _ in range(random.randint(1, 4)):
                 if column.visible:
                     char_id = column.resolve_next()
                     if self.term.chars[char_id].is_fill:

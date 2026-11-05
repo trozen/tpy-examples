@@ -6,7 +6,7 @@ import random
 from tpy import int32, Own
 
 from easing import in_out_quart, out_circ, out_expo
-from engine import Path, Scene, Sync, Terminal, randint
+from engine import Path, Scene, Sync, Terminal
 from geometry import Coord, extrapolate_along_ray, find_coords_in_circle
 from graphics import Color, Direction, Gradient, choose_color, hex_colors
 
@@ -48,8 +48,8 @@ class Fireworks:
                 # TTE starts with an empty shell, which is launched last.
                 self.shells.append(shell)
                 shell = []
-                origin_column = randint(0, self.term.canvas.right - 1)
-                origin_row = randint(home.row, self.term.canvas.top)
+                origin_column = random.randint(0, self.term.canvas.right - 1)
+                origin_row = random.randint(home.row, self.term.canvas.top)
                 origin = Coord(origin_column, origin_row)
                 burst = find_coords_in_circle(origin, self.explode_distance)
             character.move_to(Coord(origin.column, self.term.canvas.bottom))
@@ -58,7 +58,7 @@ class Fireworks:
             apex.add_waypoint(origin)
             explode = Path(random.uniform(0.2, 0.4))
             explode.ease = out_circ
-            burst_to = burst[randint(0, len(burst) - 1)]
+            burst_to = burst[random.randint(0, len(burst) - 1)]
             explode.add_waypoint(burst_to)
             bloom_control = extrapolate_along_ray(origin, burst_to, self.explode_distance // 2)
             bloom = Coord(bloom_control.column, max(1, bloom_control.row - 7))

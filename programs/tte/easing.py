@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 from typing import Callable
 
-from tpy import int32, ValueType
+from tpy import int32
 
 
 def in_circ(progress: float) -> float:
@@ -128,30 +128,20 @@ class SequenceEaser:
         self.shown = length
 
 
-class CubicBezier(ValueType):
+def make_easing(x1: float, y1: float, x2: float, y2: float) -> Callable[[float], float]:
     """A CSS-style cubic-bezier easing curve through (0, 0), (x1, y1), (x2, y2), (1, 1)."""
-    x1: float
-    y1: float
-    x2: float
-    y2: float
 
-    def __init__(self, x1: float, y1: float, x2: float, y2: float) -> None:
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
+    def sample_curve_x(t: float) -> float:
+        return 3 * x1 * (1 - t) ** 2 * t + 3 * x2 * (1 - t) * t ** 2 + t ** 3
 
-    def sample_curve_x(self, t: float) -> float:
-        return 3 * self.x1 * (1 - t) ** 2 * t + 3 * self.x2 * (1 - t) * t ** 2 + t ** 3
+    def sample_curve_y(t: float) -> float:
+        return 3 * y1 * (1 - t) ** 2 * t + 3 * y2 * (1 - t) * t ** 2 + t ** 3
 
-    def sample_curve_y(self, t: float) -> float:
-        return 3 * self.y1 * (1 - t) ** 2 * t + 3 * self.y2 * (1 - t) * t ** 2 + t ** 3
+    def sample_curve_derivative_x(t: float) -> float:
+        return (3 * (1 - t) ** 2 * x1 + 6 * (1 - t) * t * (x2 - x1)
+                + 3 * t ** 2 * (1 - x2))
 
-    def sample_curve_derivative_x(self, t: float) -> float:
-        return (3 * (1 - t) ** 2 * self.x1 + 6 * (1 - t) * t * (self.x2 - self.x1)
-                + 3 * t ** 2 * (1 - self.x2))
-
-    def __call__(self, progress: float) -> float:
+    def easing_function(progress: float) -> float:
         if progress <= 0:
             return 0.0
         if progress >= 1:
@@ -162,14 +152,14 @@ class CubicBezier(ValueType):
         upper = 1.0
         t = progress
         for _ in range(50):
-            x_est = self.sample_curve_x(t)
+            x_est = sample_curve_x(t)
             if x_est == progress:
                 break
             if x_est < progress:
                 lower = t
             else:
                 upper = t
-            derivative = self.sample_curve_derivative_x(t)
+            derivative = sample_curve_derivative_x(t)
             candidate = t - (x_est - progress) / derivative if derivative > 0 else -1.0
             if not lower < candidate < upper:
                 candidate = (lower + upper) / 2
@@ -177,4 +167,6 @@ class CubicBezier(ValueType):
                 t = candidate
                 break
             t = candidate
-        return self.sample_curve_y(t)
+        return sample_curve_y(t)
+
+    return easing_function

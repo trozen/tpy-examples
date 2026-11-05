@@ -8,7 +8,7 @@ import random
 
 from tpy import int32, Own
 
-from engine import EventKind, ParticlePool, Path, Scene, Terminal, randint
+from engine import EventKind, ParticlePool, Path, Scene, Terminal
 from geometry import Coord
 from graphics import Gradient, adjust_brightness, choose_color, hex_colors
 
@@ -86,11 +86,11 @@ class Sandstorm:
             restless = Scene("restless", looping=True)
             for _ in range(6):
                 letter = self.random_letter()
-                restless.add_frame(letter, randint(RESTLESS_FRAMES_MIN, RESTLESS_FRAMES_MAX), sand)
+                restless.add_frame(letter, random.randint(RESTLESS_FRAMES_MIN, RESTLESS_FRAMES_MAX), sand)
             character.add_scene(restless)
             # Random letters, warming from sand to the final color, then the right one.
             final_color = final_colors[home]
-            warming = Gradient([sand, final_color], [randint(SETTLE_FLICKERS_MIN, SETTLE_FLICKERS_MAX)])
+            warming = Gradient([sand, final_color], [random.randint(SETTLE_FLICKERS_MIN, SETTLE_FLICKERS_MAX)])
             settle = Scene("settle")
             for i in range(len(warming.spectrum) - 1):
                 settle.add_frame(self.random_letter(), 1, warming.spectrum[i])
@@ -105,8 +105,7 @@ class Sandstorm:
         self.unsettled.reverse()
 
     def random_letter(self) -> str:
-        # Not random.choice: the pool can hold a single letter (README).
-        return self.letters[randint(0, len(self.letters) - 1)]
+        return random.choice(self.letters)
 
     def launches(self, rate: float) -> int32:
         """A whole number a frame that averages out to `rate`."""
@@ -123,9 +122,9 @@ class Sandstorm:
         symbol = random.choice(WIND_SYMBOLS)
         shade = random.uniform(0.5, 1.0)
         character.set_appearance(symbol, adjust_brightness(sand, shade))
-        row = randint(1, self.term.canvas.top + WIND_DROP)
+        row = random.randint(1, self.term.canvas.top + WIND_DROP)
         start = Coord(0, row)
-        end = Coord(self.term.canvas.right + 1, row - randint(0, WIND_DROP))
+        end = Coord(self.term.canvas.right + 1, row - random.randint(0, WIND_DROP))
         character.move_to(start)
         path = Path(random.uniform(WIND_SPEED_MIN, WIND_SPEED_MAX) * strength)
         path.add_waypoint(end)
@@ -138,7 +137,7 @@ class Sandstorm:
         """A character blows in with the sand, and drops onto the pile."""
         character = self.term.chars[char_id]
         home = character.input_coord
-        start = Coord(0, home.row + randint(0, WIND_DROP))
+        start = Coord(0, home.row + random.randint(0, WIND_DROP))
         control = Coord(home.column // 2, start.row)
         path = Path(1.0)
         path.add_waypoint(start)

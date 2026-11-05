@@ -21,36 +21,26 @@ from tpy import int32, Own, ValueType, copy
 from geometry import (Coord, find_coord_on_bezier_curve, find_length_of_bezier_curve,
                       find_length_of_line, interpolate_coord)
 from graphics import Color, Direction, Gradient, fg_sequence
-from rng import randint
 
 RESET = "\x1b[0m"
 
 
-def _format_symbol(symbol: str, fg: Color, colored: bool) -> str:
-    if colored:
+def _format_symbol(symbol: str, fg: Color | None) -> str:
+    if fg is not None:
         return fg_sequence(fg) + symbol + RESET
     return symbol
 
 
 class Visual(ValueType):
-    """What a character looks like: a symbol, optionally painted in a color.
-
-    `colored` stands in for an optional color (README, "TurboPython bugs
-    worked around")."""
+    """What a character looks like: a symbol, optionally painted in a color."""
     symbol: str
-    fg: Color
-    colored: bool
+    fg: Color | None
     formatted: str
 
-    def __init__(self, symbol: str, fg: Color, colored: bool = True) -> None:
+    def __init__(self, symbol: str, fg: Color | None = None) -> None:
         self.symbol = symbol
         self.fg = fg
-        self.colored = colored
-        self.formatted = _format_symbol(symbol, fg, colored)
-
-
-def plain_visual(symbol: str) -> Visual:
-    return Visual(symbol, Color(0, 0, 0), False)
+        self.formatted = _format_symbol(symbol, fg)
 
 
 class Frame(ValueType):
@@ -112,9 +102,7 @@ class Scene:
     easing_current_step: int32
     frame_end_steps: list[int32]
 
-    # `sync` comes last: a default skipped over by keyword is resolved in the
-    # caller's module, where Sync may not be imported (README).
-    def __init__(self, name: str, looping: bool = False, sync: Sync = Sync.NONE) -> None:
+    def __init__(self, name: str, sync: Sync = Sync.NONE, looping: bool = False) -> None:
         self.name = name
         self.frames = []
         self.sync = sync
@@ -136,7 +124,7 @@ class Scene:
         self.add_visual(Visual(symbol, fg), duration)
 
     def add_plain_frame(self, symbol: str, duration: int32) -> None:
-        self.add_visual(plain_visual(symbol), duration)
+        self.add_visual(Visual(symbol), duration)
 
     def apply_gradient_to_symbols(self, symbols: list[str], duration: int32,
                                   gradient: Gradient) -> None:
@@ -375,7 +363,7 @@ class Character:
         self.input_symbol = symbol
         self.input_coord = coord
         self.coord = coord
-        self.visual = plain_visual(symbol)
+        self.visual = Visual(symbol)
         self.layer = 0
         self.visible = False
         self.is_fill = is_fill
@@ -405,8 +393,7 @@ class Character:
 
     def set_symbol(self, symbol: str) -> None:
         """Change the symbol, keeping the color."""
-        fg = self.visual.fg
-        self.visual = Visual(symbol, fg, self.visual.colored)
+        self.visual = Visual(symbol, self.visual.fg)
 
     def add_scene(self, scene: Own[Scene]) -> int32:
         self.scenes.append(scene)
@@ -616,18 +603,18 @@ class Canvas:
         return self.top - self.bottom + 1
 
     def random_coord(self) -> Coord:
-        column = randint(self.left, self.right)
-        row = randint(self.bottom, self.top)
+        column = random.randint(self.left, self.right)
+        row = random.randint(self.bottom, self.top)
         return Coord(column, row)
 
     def random_coord_outside(self) -> Coord:
         """A random cell just beyond one of the canvas's four edges."""
-        above = Coord(randint(self.left, self.right), self.top + 1)
-        below = Coord(randint(self.left, self.right), self.bottom - 1)
-        left = Coord(self.left - 1, randint(self.bottom, self.top))
-        right = Coord(self.right + 1, randint(self.bottom, self.top))
+        above = Coord(random.randint(self.left, self.right), self.top + 1)
+        below = Coord(random.randint(self.left, self.right), self.bottom - 1)
+        left = Coord(self.left - 1, random.randint(self.bottom, self.top))
+        right = Coord(self.right + 1, random.randint(self.bottom, self.top))
         edges = [above, below, left, right]
-        return edges[randint(0, 3)]
+        return edges[random.randint(0, 3)]
 
     def center(self) -> Coord:
         return Coord(self.left + (self.right - self.left) // 2,
@@ -645,8 +632,8 @@ class Canvas:
                 and self.text_bottom <= coord.row <= self.text_top)
 
     def random_coord_in_text(self) -> Coord:
-        column = randint(self.text_left, self.text_right)
-        row = randint(self.text_bottom, self.text_top)
+        column = random.randint(self.text_left, self.text_right)
+        row = random.randint(self.text_bottom, self.text_top)
         return Coord(column, row)
 
 

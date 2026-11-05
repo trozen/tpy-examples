@@ -6,7 +6,7 @@ from typing import Final
 
 from tpy import int32, Own
 
-from engine import Grouping, Scene, Terminal, randint
+from engine import Grouping, Scene, Terminal
 from graphics import Color, Direction, Gradient, adjust_brightness, hex_colors
 
 BEAM_ROW_SYMBOLS = ["▂", "▁", "_"]
@@ -34,10 +34,10 @@ class BeamGroup:
     def __init__(self, term: Terminal, chars: list[int32], direction: str) -> None:
         if direction == "row":
             ordered = sorted(chars, key=lambda i: term.chars[i].input_coord.column)
-            speed = randint(BEAM_ROW_SPEED_RANGE[0], BEAM_ROW_SPEED_RANGE[1]) * 0.1
+            speed = random.randint(BEAM_ROW_SPEED_RANGE[0], BEAM_ROW_SPEED_RANGE[1]) * 0.1
         else:
             ordered = sorted(chars, key=lambda i: term.chars[i].input_coord.row)
-            speed = randint(BEAM_COLUMN_SPEED_RANGE[0], BEAM_COLUMN_SPEED_RANGE[1]) * 0.1
+            speed = random.randint(BEAM_COLUMN_SPEED_RANGE[0], BEAM_COLUMN_SPEED_RANGE[1]) * 0.1
         if random.choice([True, False]):
             ordered.reverse()
         self.chars = ordered
@@ -131,7 +131,7 @@ class Beams:
         if self.phase == "beams":
             if not self.delay:
                 if self.pending:
-                    for _ in range(randint(1, 5)):
+                    for _ in range(random.randint(1, 5)):
                         if self.pending:
                             self.active.append(self.pending.pop(0))
                 self.delay = BEAM_DELAY

@@ -45,7 +45,7 @@ def main() -> None:
     # lookup for final steps (< 2**K)
     lookup_tail = [0]
     for n in range(1, 2**K):
-        steps = 0
+        steps: int64 = 0
         while n != 1:
             n = step(n)
             steps += 1
@@ -70,7 +70,7 @@ def main() -> None:
 
         # use multistep lookups (see link in top)
         orign = n
-        steps: int64 = 0
+        steps = 0
 
         while n > bmask:
             a = n >> K
